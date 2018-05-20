@@ -36,6 +36,8 @@ def create_response(message, bot_id):
     if user == bot_id:
       if command.lower() in ["scream", "holler", "freak out"]:
         return "AAAARRGGHHHHHHHHHHHHHH"
+      if command.lower() in ["lose it", "lose your shit"]:
+        return "I am kind of losing my shit right now?"
       if command.lower() in ["thank you", "thanks"]:
         return "Glad to help <3"
       if command.lower().startswith("hug"):
@@ -46,13 +48,15 @@ def create_response(message, bot_id):
         return command.partition(' ')[2].upper()
       if command.lower().startswith("hate "):
         return "I hate " + command.partition(' ')[2] + " SO MUCH. Ugh, the worst."
+      if "code" in command.lower() or "github" in command.lower():
+        return "My code's at https://github.com/whereistanya/screambot. Send Tanya a PR."
       else:
         response = "I don't know how to %s" % command
         return response
     else:
       return "You're talking about me <3"
  
-  # Not a direct command.
+  # Not a direct command, just a sentence with "screambot" in it.
   if message.lower().startswith("what"):
     return ("Hi, I'm screambot. Tell me to scream things. I'm running on " +
            "Tanya's GCE VM. I see all traffic on any channel I'm invited to, " +
@@ -61,6 +65,9 @@ def create_response(message, bot_id):
 
   if message.lower().startswith("thank"):
     return "Any time."
+
+  if "code" in message.lower() or "github" in message.lower():
+    return "My code's at https://github.com/whereistanya/screambot. Add something! Send Tanya a PR."
 
   return "Want me to do something? Start your message with @screambot."
 
