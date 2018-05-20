@@ -17,13 +17,14 @@ def create_response(message, bot_id):
 
   Screambot replies in the following circumstances:
     * @screambot scream thing: responds "THING"
+    * @screambot hate thing: responds "I hate thing""
     * @screambot what anything: responds with info about screambot
     * @screambot otherverb thing: responds "Don't know how"
     * @otheruser sentence containing @screambot: responds "you're talking about me"
     * other sentence containing @screambot: TBD
   """
 # Only trigger on sentences containing "screambot" or @screambot's UID.
-  if bot_id not in message and "screambot" not in message:
+  if bot_id.lower() not in message.lower() and "screambot" not in message.lower():
     return
 
   # First handle commands starting with a username
@@ -32,12 +33,16 @@ def create_response(message, bot_id):
     user = matches.group(1)
     command = matches.group(2)
     if user == bot_id:
-      if command in ["scream", "holler", "freak out"]:
+      if command.lower() in ["scream", "holler", "freak out"]:
         return "AAAARRGGHHHHHHHHHHHHHH"
-      if command in ["hug"]:
+      if command.lower() in ["thank you", "thanks"]:
+        return "Glad to help <3"
+      if command.lower().startswith("hug"):
         return ":virtualhug:"
-      if command.startswith("scream "):
+      if command.lower().startswith("scream "):
         return command.partition(' ')[2].upper()
+      if command.lower().startswith("hate "):
+        return "I hate " + command.partition(' ')[2] + " SO MUCH. Ugh, the worst."
       else:
         response = "I don't know how to %s" % command
         return response
@@ -45,13 +50,13 @@ def create_response(message, bot_id):
       return "You're talking about me <3"
  
   # Not a direct command.
-  if message.lower().startswith("what "):
+  if message.lower().startswith("what"):
     return ("Hi, I'm screambot. Tell me to scream things. I'm running on " +
            "Tanya's GCE VM. I see all traffic on any channel I'm invited to, " +
            "but I promise I don't log anything. You can see my code at " +
            "https://github.com/whereistanya/screambot")
 
-  if message.lower().startswith("thank "):
+  if message.lower().startswith("thank"):
     return "Any time."
 
   return "Want me to do something? Start your message with @screambot."
