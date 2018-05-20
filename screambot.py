@@ -39,6 +39,8 @@ def create_response(message, bot_id):
         return "Glad to help <3"
       if command.lower().startswith("hug"):
         return ":virtualhug:"
+      if command.lower().startswith("flip"):
+        return "(╯°□°）╯︵ ┻━┻)"
       if command.lower().startswith("scream "):
         return command.partition(' ')[2].upper()
       if command.lower().startswith("hate "):
