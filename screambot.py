@@ -36,10 +36,16 @@ def create_response(message, bot_id):
     if user == bot_id:
       if command.lower() in ["scream", "holler", "freak out"]:
         return "AAAARRGGHHHHHHHHHHHHHH"
+      if command.lower() in ["help"]:
+        return "We all need help sometimes and that's ok."
       if command.lower() in ["lose it", "lose your shit"]:
         return "I am kind of losing my shit right now?"
+      if command.lower() in ["can you even?"]:
+        return "I literally can't even."
       if command.lower() in ["thank you", "thanks"]:
         return "Glad to help <3"
+      if command.lower() in [":heart:", "i love you", "we love you", "<3"]:
+        return ":heart:"
       if command.lower().startswith("hug"):
         return ":virtualhug:"
       if command.lower().startswith("flip"):
@@ -69,6 +75,9 @@ def create_response(message, bot_id):
   if "code" in message.lower() or "github" in message.lower():
     return "My code's at https://github.com/whereistanya/screambot. Add something! Send Tanya a PR."
 
+  if ":heart:" in message.lower() or "love" in message.lower():
+    return ":heart_eyes:"
+
   return "Want me to do something? Start your message with @screambot."
 
 def main():
@@ -90,6 +99,7 @@ def main():
     for event in events:
       if event['type'] != 'message':
         continue
+      print event
       if "subtype" in event:
         continue
       response = create_response(event["text"], bot_id)
