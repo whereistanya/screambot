@@ -103,7 +103,7 @@ def create_response(message, bot_id):
   user = None
   command = None
   # First handle commands starting with a username (@screambot or screambot)
-  if message.startswith("screambot "):
+  if message.lower().startswith("screambot "):
     user = "screambot"
     command = message[len("screambot "):]
   else:
