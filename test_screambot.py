@@ -17,8 +17,12 @@ class TestScreambot(unittest.TestCase):
       "<@UA1234567> hate spam calls": "I hate spam calls SO MUCH. Ugh, the worst.",
       "<@UA1234567> scream the scream code is a hack, Tanya.": "THE SCREAM CODE IS A HACK, TANYA.",
       "<@UA1234567> scream something": "SOMETHING",
+      "screambot scream something": "SOMETHING",
+      "<@UA1234567> scream <system> is broken": "<SYSTEM> IS BROKEN",
       "<@UA1234567> I love you, screambot": "It's mutual, I promise you.",
       "<@UAXXXXXXX> what is screambot?": "You're talking about me <3",
+      "<@UA1234567> blame systemd": "Grr, systemd strikes again.",
+      "screambot blame the rain": "Grr, the rain strikes again.",
       "does screambot want a botsnack?": ":cookie:",
       "thanks, @screambot": "Any time.",
     }
