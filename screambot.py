@@ -33,15 +33,18 @@ def main():
   while True:
     events = slack_client.rtm_read()
     for event in events:
-      if event['type'] != 'message':
-        continue
-      print event
-      if "subtype" in event and event['subtype'] != 'message_changed':
-        continue
-      response = responses.create_response(event["text"], bot_id)
-      if response:
-        # print "Got %s and responding %s." % (event["text"], response)
-        slack_client.api_call("chat.postMessage", channel=event["channel"], text=response)
-      time.sleep(RTM_READ_DELAY)
+      text = None
+      # Only react to new messages and message edits.
+      if event['type'] == 'message' and "subtype" not in event:
+        text = event["text"]
+      elif event['type'] == 'message' and event['subtype'] == 'message_changed':
+        text = event["message"]["text"]
+
+      if text:
+        response = responses.create_response(text, bot_id)
+        if response:
+          # print "Got %s and responding %s." % (event["text"], response)
+          slack_client.api_call("chat.postMessage", channel=event["channel"], text=response)
+        time.sleep(RTM_READ_DELAY)
 
 main()
