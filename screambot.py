@@ -36,7 +36,7 @@ def main():
       if event['type'] != 'message':
         continue
       print event
-      if "subtype" in event:
+      if "subtype" in event and event['subtype'] != 'message_changed':
         continue
       response = responses.create_response(event["text"], bot_id)
       if response:
