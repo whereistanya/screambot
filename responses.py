@@ -30,6 +30,8 @@ STANDALONE_COMMANDS = {
 STARTER_COMMANDS = {
   "freak out about ": "I am LOSING MY SHIT about $what right now.",
   "lose it about ": "AGH what is the deal with $what?",
+  "react to ": "EXCUSE ME HI I have opinions about $what",
+  "lose your shit about ": "OH SHIT did you know about $what?",
   "hug ": ":virtualhug: for $what",
   "blame ": "Grr, $what strikes again.",
   "flip ": "╯°□°）╯︵ ┻━�",
