@@ -10,7 +10,6 @@ COMMAND_REGEX = "^<@(|[WU].+?)> (.+)"
 STANDALONE_COMMANDS = {
   "botsnack": ":cookie:",
   "freak out": "*breathes into a paper bag*",
-  "good bot": ":heart:",
   "lose it": "I am kind of losing my shit right now?",
   "lose your shit": "I am kind of losing my shit right now?",
   "scream": "AAAARRGGHHHHHHHHHHHHHH",
@@ -51,6 +50,7 @@ STARTER_COMMANDS_EE = {
   "I love you": "It's mutual, I promise you.",
   "<3": "Right back at you <3",
   "why ": "I'm a simple bot. It is not for me to speculate.",
+  "good bot": ":heart:",
 }
 
 # It's a direct command to @screambot and it contains this text.
