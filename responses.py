@@ -19,6 +19,7 @@ STANDALONE_COMMANDS = {
   "hug": ":virtualhug:",
   "flip": "(╯°□°）╯︵ ┻━┻)",
   ":heart:": ":heart:",
+  ":poop:": "Seriously.",
   "yo": "Yo.",
   ":yo:": "Yo.",
 }
@@ -46,7 +47,6 @@ STARTER_COMMANDS_EE = {
   "is ": "I'm just a small bot making my way in the world.",
   "I love you": "It's mutual, I promise you.",
   "<3": "Right back at you <3",
-  ":poop:": "Seriously.",
   "why ": "I'm a simple bot. It is not for me to speculate.",
 }
 
