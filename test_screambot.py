@@ -23,6 +23,7 @@ class TestScreambot(unittest.TestCase):
       "<@UAXXXXXXX> what is screambot?": "You're talking about me <3",
       "<@UA1234567> blame systemd": "Grr, systemd strikes again.",
       "screambot blame the rain": "Grr, the rain strikes again.",
+      "screambot yo": "Yo.",
       "does screambot want a botsnack?": ":cookie:",
       "thanks, @screambot": "Any time.",
       "good work, screambot": ":heart_eyes:",
