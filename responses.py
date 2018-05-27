@@ -16,30 +16,38 @@ STANDALONE_COMMANDS = {
   "scream": "AAAARRGGHHHHHHHHHHHHHH",
   "thank you": "Glad to help <3",
   "thanks": "Any time, friend.",
-  ":heart:": ":heart:",
-  ":poop:": "Seriously.",
   "hug": ":virtualhug:",
   "flip": "(╯°□°）╯︵ ┻━┻)",
-  "<3": "Right back at you <3",
+  ":heart:": ":heart:",
+  "yo": "Yo.",
+  ":yo:": "Yo.",
 }
 
 # It's a direct command to @screambot and it starts with this.
 # "$what" will be replaced with the thing to scream about.
 # TODO: Add "$who" and figure out how to talk to.
 STARTER_COMMANDS = {
-  "you": "I promise to always try.",
-  "is ": "I'm just a small bot making my way in the world.",
   "freak out about ": "I am LOSING MY SHIT about $what right now.",
   "lose it about ": "AGH what is the deal with $what?",
   "hug ": ":virtualhug: for $what",
   "blame ": "Grr, $what strikes again.",
   "flip ": "╯°□°）╯︵ ┻━�",
   "hate ": "I hate $what SO MUCH. Ugh, the worst.", 
-  "I love you": "It's mutual, I promise you.",
   # look, I know this is terrible, but I'm too lazy to handle nice little functions today.
   "scream ": "FUNCTION:UPPERCASE $what",
   "help": "FUNCTION:HELP",
   "what can you ": "FUNCTION:HELP",
+}
+
+# Behave exactly as starter commands but aren't in the "what can you do" list.
+# Easter eggs, I guess :-)
+STARTER_COMMANDS_EE = {
+  "you": "I promise to always try.",
+  "is ": "I'm just a small bot making my way in the world.",
+  "I love you": "It's mutual, I promise you.",
+  "<3": "Right back at you <3",
+  ":poop:": "Seriously.",
+  "why ": "I'm a simple bot. It is not for me to speculate.",
 }
 
 # It's a direct command to @screambot and it contains this text.
@@ -113,12 +121,17 @@ def create_response(message, bot_id):
     if re.match(":[\w_-]+:", command):
       return command + command + command + "!"
 
-    # A command at the start of the line, like scream or hate. The template is
-    # to replace "$what" with the rest of the line.
-    for text in STARTER_COMMANDS.keys():
+    # A command at the start of the line, like scream or hate. We maintain two
+    # dictionaries: the ones we want to show up in the help message and cute
+    # surprise extras. We combine them here.
+    starts = STARTER_COMMANDS.copy()
+    starts.update(STARTER_COMMANDS_EE.copy())
+
+    for text in starts.keys():
       if command.startswith(text.lower()):
         thing = command[len(text):] # Everything but the starter words
-        string = Template(STARTER_COMMANDS[text]).safe_substitute(what=thing)
+        # The template replaces "$what" with the rest of the line.
+        string = Template(starts[text]).safe_substitute(what=thing)
         if string.startswith("FUNCTION:UPPERCASE "):
           return string.lstrip("FUNCTION:UPPERCASE ").upper()
         if string.startswith("FUNCTION:HELP"):
