@@ -25,6 +25,7 @@ class TestScreambot(unittest.TestCase):
       "screambot blame the rain": "Grr, the rain strikes again.",
       "does screambot want a botsnack?": ":cookie:",
       "thanks, @screambot": "Any time.",
+      "good work, screambot": ":heart_eyes:",
     }
 
     for message, expected in cases.iteritems():
