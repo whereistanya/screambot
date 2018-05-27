@@ -10,6 +10,7 @@ COMMAND_REGEX = "^<@(|[WU].+?)> (.+)"
 STANDALONE_COMMANDS = {
   "botsnack": ":cookie:",
   "freak out": "*breathes into a paper bag*",
+  "good bot": ":heart:",
   "lose it": "I am kind of losing my shit right now?",
   "lose your shit": "I am kind of losing my shit right now?",
   "scream": "AAAARRGGHHHHHHHHHHHHHH",
@@ -26,9 +27,12 @@ STANDALONE_COMMANDS = {
 # "$what" will be replaced with the thing to scream about.
 # TODO: Add "$who" and figure out how to talk to.
 STARTER_COMMANDS = {
+  "you": "I promise to always try.",
+  "is ": "I'm just a small bot making my way in the world.",
   "freak out about ": "I am LOSING MY SHIT about $what right now.",
   "lose it about ": "AGH what is the deal with $what?",
   "hug ": ":virtualhug: for $what",
+  "blame ": "Grr, $what strikes again.",
   "flip ": "╯°□°）╯︵ ┻━�",
   "hate ": "I hate $what SO MUCH. Ugh, the worst.", 
   "I love you": "It's mutual, I promise you.",
@@ -41,9 +45,10 @@ STARTER_COMMANDS = {
 # It's a direct command to @screambot and it contains this text.
 CONTAIN_COMMANDS = {
   "botsnack": ":cookie:",
-  "code": "My code's at https://github.com/whereistanya/screambot. Send Tanya a PR. :female_technologist:",
-  "github": "My code's at https://github.com/whereistanya/screambot. Send Tanya a PR. :female_technologist:",
+  "code": "My code's at https://github.com/whereistanya/screambot. Send Tanya a PR. :computer:",
+  "github": "My code's at https://github.com/whereistanya/screambot. Send Tanya a PR. :computer:",
   "can you even": "I literally can't even.",
+  "work": "WERK!",
 }
 
 # It's not a command but it contains the word screambot and this text.
@@ -83,16 +88,22 @@ def create_response(message, bot_id):
   if bot_id.lower() not in message.lower() and "screambot" not in message.lower():
     return
 
-  # First handle commands starting with a username
-  matches = re.search(COMMAND_REGEX, message)
-  if matches:
-    # Matches things like "@screambot scream a thing" and "@tanya some message" 
-    user = matches.group(1)  # Who was mentioned, e.g., screambot or tanya
-    if user != bot_id: # It was a message for someone else that included the word 'screambot'
-      return "You're talking about me <3"
+  user = None
+  command = None
+  # First handle commands starting with a username (@screambot or screambot)
+  if message.startswith("screambot "):
+    user = "screambot"
+    command = message[len("screambot "):]
+  else:
+    matches = re.search(COMMAND_REGEX, message)
+    if matches:
+    # Matches things like "@screambot scream a thing" and "@tanya some message"
+      user = matches.group(1)  # Who was mentioned, e.g., screambot or tanya
+      if user != bot_id: # It was a message for someone else that included the word 'screambot'
+        return "You're talking about me <3"
+      command = matches.group(2).lower() # Everything past the name: "do a thing".
 
-    command = matches.group(2).lower() # Everything past the name: "do a thing".
-
+  if user and command:
     # A complete command like "hug" or "freak out".
     if command in STANDALONE_COMMANDS:
       return STANDALONE_COMMANDS[command]
@@ -123,7 +134,8 @@ def create_response(message, bot_id):
     # A direct command we don't know how to handle.
     return "I don't know how to %s" % command
  
-  # Now handle messages that don't start with @screambot, but use her name.
+  # Now handle messages that don't start with @screambot/screambot, but use
+  # her name somewhere in the sentence.
   for text in CONVERSATION.keys():
     if text in message.lower():
       template = Template(CONVERSATION[text])
