@@ -39,7 +39,7 @@ STARTER_COMMANDS = {
   # look, I know this is terrible, but I'm too lazy to handle nice little functions today.
   "scream ": "FUNCTION:UPPERCASE $what",
   "help": "FUNCTION:HELP",
-  "what can you do?": "FUNCTION:HELP",
+  "what can you ": "FUNCTION:HELP",
 }
 
 # It's a direct command to @screambot and it contains this text.
@@ -59,6 +59,7 @@ CONVERSATION = {
   "thank": "Any time.",
   ":heart:": ":heart_eyes:",
   "love": ":heart_eyes:",
+  "good": ":heart_eyes:",
 }
 
 def help_message():
