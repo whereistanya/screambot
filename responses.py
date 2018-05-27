@@ -28,6 +28,7 @@ STANDALONE_COMMANDS = {
 # "$what" will be replaced with the thing to scream about.
 # TODO: Add "$who" and figure out how to talk to.
 STARTER_COMMANDS = {
+  "announce that ": ":star: :star: EXCUSE ME HI I HAVE AN ANNOUNCEMENT: $what :star: :star:",
   "freak out about ": "I am LOSING MY SHIT about $what right now.",
   "lose it about ": "AGH what is the deal with $what?",
   "react to ": "EXCUSE ME HI I have opinions about $what",
