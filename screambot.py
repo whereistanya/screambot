@@ -43,7 +43,6 @@ def main():
       if text:
         response = responses.create_response(text, bot_id)
         if response:
-          # print "Got %s and responding %s." % (event["text"], response)
           slack_client.api_call("chat.postMessage", channel=event["channel"], text=response)
         time.sleep(RTM_READ_DELAY)
 
