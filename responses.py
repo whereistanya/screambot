@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import random
 import re
 from string import Template
 
@@ -60,6 +61,9 @@ CONTAIN_COMMANDS = {
   "github": "My code's at https://github.com/whereistanya/screambot. Send Tanya a PR. :computer:",
   "can you even": "I literally can't even.",
   "work": "WERK!",
+  "industry": ":poop:fire:",
+  "patriarchy": "FUNCTION:RANDOM feminism",
+  "tech": "FUNCTION:RANDOM tech",
 }
 
 # It's not a command but it contains the word screambot and this text.
@@ -72,6 +76,40 @@ CONVERSATION = {
   "love": ":heart_eyes:",
   "good": ":heart_eyes:",
 }
+
+quotes = {
+  "feminism": [
+    """"I am deliberate and afraid of nothing." -- Audre Lorde""",
+    """"Freedom cannot be achieved unless women have been emancipated from all forms of oppression" -- Nelson Mandela""",
+    """"I've never been interested in being invisible and erased."-- Laverne Cox.""",
+    """"Unlikeable women] accept the consequences of their choices, and those consequences become stories worth reading." -- Roxane Gay""",
+    """"I want to be respected in all my femaleness. Because I deserve to be." -- Chimamanda Ngozi Adichie""",
+    """"No woman can call herself free who does not own and control her own body" -- Margaret Sanger""",
+    """"Nolite te bastardes carborundorum." -- Margaret Atwood""",
+    """"There is no gate, no lock, no bolt that you can set upon the freedom of my mind." -- Virginia Woolf""",
+    """"If one man can destroy everything, why can't one girl change it?" -- Malala Yousafzai""",
+    """"Time is on the side of change." -- Ruth Bader Ginsberg""",
+    """"Some people really feel uncomfortable around women who don't hate themselves. So that's why you need to be a little bit brave." -- Mindy Kaling""",
+    """"We're all building our world, right now, in real time." -- Lindy West""",
+    """"So use that anger. You write it. You paint it. You dance it. You march it. You vote it. You do everything about it. You talk it. Never stop talking it." -- Maya Angelou""",
+    """"If we do not share our stories and shine a light on inequities, things will not change." -- Ellen Pao""",
+  ],
+
+  "tech": [
+    """"I also say to my team: Do 10% of your job shittily. It`s okay to do something shittily. Perfectionism prevents us from taking double steps in our career. We think we have to be perfect, but we don't" -- Reshma Saujani""",
+    """"I am a big supporter of the minimum viable product and taking something that is the simplest explanation of your idea and putting it into the marketplace so you can start to get feedback." -- Kathryn Minshew""",
+    """"Feeling a little uncomfortable with your skills is a sign of learning, and continuous learning is what the tech industry thrives on! It's important to seek out environments where you are supported, but where you have the chance to be uncomfortable and learn new things." -- Vanessa Hurst""",
+
+  ] 
+}
+
+def random_quote(key):
+  """Returns a quote from the quotes dict."""
+  if key in quotes:
+    return random.choice(quotes[key])
+  else:
+    return random.choice(quotes["tech"])
+
 
 def help_message():
   """Returns a user message explaining what this is."""
@@ -139,6 +177,8 @@ def create_response(message, bot_id):
           return string.lstrip("FUNCTION:UPPERCASE ").upper()
         if string.startswith("FUNCTION:HELP"):
           return help_message()
+        if string.startswith("FUNCTION:RANDOM "):
+          return random_quote(string.lstrip("FUNCTION:RANDOM "))
         return string
 
     # A command that contains a word that wasn't caught by the STARTER_COMMANDS.
@@ -146,7 +186,10 @@ def create_response(message, bot_id):
     for text in CONTAIN_COMMANDS.keys():
       if text in command:
         template = Template(CONTAIN_COMMANDS[text])
-        return template.safe_substitute(what=command)
+        string = template.safe_substitute(what=command)
+        if string.startswith("FUNCTION:RANDOM "):
+          return random_quote(string.lstrip("FUNCTION:RANDOM "))
+        return string
 
     # A direct command we don't know how to handle.
     return "I don't know how to %s" % command
@@ -156,7 +199,10 @@ def create_response(message, bot_id):
   for text in CONVERSATION.keys():
     if text in message.lower():
       template = Template(CONVERSATION[text])
-      return template.safe_substitute(what=text)
+      string = template.safe_substitute(what=text)
+      if string.startswith("FUNCTION:RANDOM "):
+        return random_quote(string.lstrip("FUNCTION:RANDOM "))
+      return string
 
   return "Want me to do something? Start your message with @screambot."
 

@@ -44,6 +44,12 @@ class TestScreambot(unittest.TestCase):
       self.assertTrue("scream;" in response)
       self.assertTrue("Hi, I'm Screambot" in response)
 
+  def test_random(self):
+    bot_id = "UA1234567"
+    case = "screambot how about that patriarchy"
+    response = responses.create_response(case, bot_id)
+    quotes = responses.quotes["feminism"]
+    self.assertTrue(response in quotes)
 
 if __name__ == 'main__':
     unittest.main()
