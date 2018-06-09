@@ -18,6 +18,7 @@ class TestScreambot(unittest.TestCase):
       "<@UA1234567> scream the scream code is a hack, Tanya.": "THE SCREAM CODE IS A HACK, TANYA.",
       "<@UA1234567> scream something": "SOMETHING",
       "screambot scream something": "SOMETHING",
+      "screambot scream I love cats": "I LOVE CATS",
       "<@UA1234567> scream <system> is broken": "<SYSTEM> IS BROKEN",
       "<@UA1234567> I love you, screambot": "It's mutual, I promise you.",
       "<@UAXXXXXXX> what is screambot?": "You're talking about me <3",
