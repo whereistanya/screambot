@@ -36,7 +36,8 @@ STARTER_COMMANDS = {
   "hug ": ":virtualhug: for $what",
   "blame ": "Grr, $what strikes again.",
   "flip ": "╯°□°）╯︵ ┻━�",
-  "hate ": "I hate $what SO MUCH. Ugh, the worst.", 
+  "hate ": "I hate $what SO MUCH. Ugh, the worst.",
+  "love ": "$what is pretty much the best thing.",
   # look, I know this is terrible, but I'm too lazy to handle nice little functions today.
   "scream ": "FUNCTION:UPPERCASE $what",
   "help": "FUNCTION:HELP",
@@ -63,7 +64,10 @@ CONTAIN_COMMANDS = {
   "work": "WERK!",
   "industry": ":poop:fire:",
   "patriarchy": "FUNCTION:RANDOM feminism",
+  "feminism": "FUNCTION:RANDOM feminism",
   "tech": "FUNCTION:RANDOM tech",
+  "inspire": "FUNCTION:RANDOM tech",
+  "inspiration": "FUNCTION:RANDOM tech",
 }
 
 # It's not a command but it contains the word screambot and this text.
@@ -93,14 +97,16 @@ quotes = {
     """"We're all building our world, right now, in real time." -- Lindy West""",
     """"So use that anger. You write it. You paint it. You dance it. You march it. You vote it. You do everything about it. You talk it. Never stop talking it." -- Maya Angelou""",
     """"If we do not share our stories and shine a light on inequities, things will not change." -- Ellen Pao""",
+    """"The difference between a broken community and a thriving one is the presence of women who are valued." --- Michelle Obama""",
   ],
 
   "tech": [
     """"I also say to my team: Do 10% of your job shittily. It`s okay to do something shittily. Perfectionism prevents us from taking double steps in our career. We think we have to be perfect, but we don't" -- Reshma Saujani""",
     """"I am a big supporter of the minimum viable product and taking something that is the simplest explanation of your idea and putting it into the marketplace so you can start to get feedback." -- Kathryn Minshew""",
     """"Feeling a little uncomfortable with your skills is a sign of learning, and continuous learning is what the tech industry thrives on! It's important to seek out environments where you are supported, but where you have the chance to be uncomfortable and learn new things." -- Vanessa Hurst""",
-
-  ] 
+    """"The world would be a better place if more engineers, like me, hated technology. The stuff I design, if I'm successful, nobody will ever notice." -- Radia Perlman""",
+    """"Opportunities, the good ones, they're messy and confusing and hard to recognize. They're risky. They challenge you." -- Susan Wojcicki""",
+  ]
 }
 
 def random_quote(key):
@@ -174,21 +180,24 @@ def create_response(message, bot_id):
         # The template replaces "$what" with the rest of the line.
         string = Template(starts[text]).safe_substitute(what=thing)
         if string.startswith("FUNCTION:UPPERCASE "):
-          return string.lstrip("FUNCTION:UPPERCASE ").upper()
+          stripped = string[len("FUNCTION:UPPERCASE "):]
+          return stripped.upper()
         if string.startswith("FUNCTION:HELP"):
           return help_message()
         if string.startswith("FUNCTION:RANDOM "):
-          return random_quote(string.lstrip("FUNCTION:RANDOM "))
+          stripped = string[len("FUNCTION:RANDOM "):]
+          return random_quote(stripped)
         return string
 
     # A command that contains a word that wasn't caught by the STARTER_COMMANDS.
-    # The template is to replace "$what" with the entire command. 
+    # The template is to replace "$what" with the entire command.
     for text in CONTAIN_COMMANDS.keys():
       if text in command:
         template = Template(CONTAIN_COMMANDS[text])
         string = template.safe_substitute(what=command)
         if string.startswith("FUNCTION:RANDOM "):
-          return random_quote(string.lstrip("FUNCTION:RANDOM "))
+          stripped = string[len("FUNCTION:RANDOM "):]
+          return random_quote(stripped)
         return string
 
     # A direct command we don't know how to handle.
@@ -201,7 +210,8 @@ def create_response(message, bot_id):
       template = Template(CONVERSATION[text])
       string = template.safe_substitute(what=text)
       if string.startswith("FUNCTION:RANDOM "):
-        return random_quote(string.lstrip("FUNCTION:RANDOM "))
+        stripped = string[len("FUNCTION:RANDOM "):]
+        return random_quote(stripped)
       return string
 
   return "Want me to do something? Start your message with @screambot."
