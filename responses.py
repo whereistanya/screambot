@@ -12,13 +12,14 @@ STANDALONE_COMMANDS = {
   "botsnack": ":cookie:",
   "freak out": "*breathes into a paper bag*",
   "lose it": "I am kind of losing my shit right now?",
-  "lose your shit": "I am kind of losing my shit right now?",
+  "lose your shit": "FUUUUUUUUUUUUUUUUUUUUUUUCK",
   "scream": "AAAARRGGHHHHHHHHHHHHHH",
   "thank you": "Glad to help <3",
   "thanks": "Any time, friend.",
   "hug": ":virtualhug:",
   "flip": "(╯°□°）╯︵ ┻━┻)",
   ":heart:": ":heart:",
+  "<3": ":heart:",
   ":poop:": "Seriously.",
   "yo": "Yo.",
   ":yo:": "Yo.",
@@ -68,6 +69,7 @@ CONTAIN_COMMANDS = {
   "tech": "FUNCTION:RANDOM tech",
   "inspire": "FUNCTION:RANDOM tech",
   "inspiration": "FUNCTION:RANDOM tech",
+  "<3": ":heart:",
 }
 
 # It's not a command but it contains the word screambot and this text.
@@ -79,6 +81,7 @@ CONVERSATION = {
   ":heart:": ":heart_eyes:",
   "love": ":heart_eyes:",
   "good": ":heart_eyes:",
+  "<3": ":heart:",
 }
 
 quotes = {
@@ -98,6 +101,7 @@ quotes = {
     """"So use that anger. You write it. You paint it. You dance it. You march it. You vote it. You do everything about it. You talk it. Never stop talking it." -- Maya Angelou""",
     """"If we do not share our stories and shine a light on inequities, things will not change." -- Ellen Pao""",
     """"The difference between a broken community and a thriving one is the presence of women who are valued." --- Michelle Obama""",
+    """"I'm tough, I'm ambitious, and I know exactly what I want. If that makes me a bitch, okay." --  Madonna""",
   ],
 
   "tech": [
