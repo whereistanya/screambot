@@ -19,7 +19,7 @@ STANDALONE_COMMANDS = {
   "hug": ":virtualhug:",
   "flip": "(╯°□°）╯︵ ┻━┻)",
   ":heart:": ":heart:",
-  "<3": ":heart:",
+  "&lt;3": ":heart:",
   ":poop:": "Seriously.",
   "yo": "Yo.",
   ":yo:": "Yo.",
@@ -51,7 +51,7 @@ STARTER_COMMANDS_EE = {
   "you": "I promise to always try.",
   "is ": "I'm just a small bot making my way in the world.",
   "I love you": "It's mutual, I promise you.",
-  "<3": "Right back at you <3",
+  "&lt;3": "Right back at you <3",
   "why ": "I'm a simple bot. It is not for me to speculate.",
   "good bot": ":heart:",
 }
@@ -69,7 +69,7 @@ CONTAIN_COMMANDS = {
   "tech": "FUNCTION:RANDOM tech",
   "inspire": "FUNCTION:RANDOM tech",
   "inspiration": "FUNCTION:RANDOM tech",
-  "<3": ":heart:",
+  "&lt;3": ":heart:",
 }
 
 # It's not a command but it contains the word screambot and this text.
@@ -81,7 +81,7 @@ CONVERSATION = {
   ":heart:": ":heart_eyes:",
   "love": ":heart_eyes:",
   "good": ":heart_eyes:",
-  "<3": ":heart:",
+  "&lt;3": ":heart:",
 }
 
 quotes = {
