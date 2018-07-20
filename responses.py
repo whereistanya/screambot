@@ -38,6 +38,7 @@ STARTER_COMMANDS = {
   "blame ": "Grr, $what strikes again.",
   "flip ": "╯°□°）╯︵ ┻━�",
   "hate ": "I hate $what SO MUCH. Ugh, the worst.",
+  "hate on ": "You know what I really hate? What I really hate is $what.",
   "love ": "$what is pretty much the best thing.",
   # look, I know this is terrible, but I'm too lazy to handle nice little functions today.
   "scream ": "FUNCTION:UPPERCASE $what",
@@ -153,7 +154,7 @@ def create_response(message, bot_id):
   # First handle commands starting with a username (@screambot or screambot)
   if message.lower().startswith("screambot "):
     user = "screambot"
-    command = message[len("screambot "):]
+    command = message[len("screambot "):].lstrip()
   else:
     matches = re.search(COMMAND_REGEX, message)
     if matches:
@@ -161,7 +162,7 @@ def create_response(message, bot_id):
       user = matches.group(1)  # Who was mentioned, e.g., screambot or tanya
       if user != bot_id: # It was a message for someone else that included the word 'screambot'
         return "You're talking about me <3"
-      command = matches.group(2).lower() # Everything past the name: "do a thing".
+      command = matches.group(2).lower().lstrip()  # Everything past the name: "do a thing".
 
   if user and command:
     # A complete command like "hug" or "freak out".
