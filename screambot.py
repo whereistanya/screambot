@@ -13,7 +13,7 @@ from slackclient import SlackClient
 import responses
 import secret
 
-RTM_READ_DELAY = 1 # 1 second delay between reading from RTM
+RTM_READ_DELAY = 0.2 # 0.2 second delay between reading from RTM
 COMMAND_REGEX = "^<@(|[WU].+?)> (.+)"
 
 def main():
@@ -44,6 +44,6 @@ def main():
         response = responses.create_response(text, bot_id)
         if response:
           slack_client.api_call("chat.postMessage", channel=event["channel"], text=response)
-        time.sleep(RTM_READ_DELAY)
+    time.sleep(RTM_READ_DELAY)
 
 main()
