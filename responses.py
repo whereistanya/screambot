@@ -5,7 +5,7 @@ import random
 import re
 from string import Template
 
-COMMAND_REGEX = "^<@(|[WU].+?)> (.+)"
+COMMAND_REGEX = "^<@(|[WU].+?)>[:,]? (.+)"
 
 # It's a command to @screambot and this is the entire thing.
 STANDALONE_COMMANDS = {
@@ -21,6 +21,7 @@ STANDALONE_COMMANDS = {
   ":heart:": ":heart:",
   "&lt;3": ":heart:",
   ":poop:": "Seriously.",
+  "sigh": ":slightly_frowning_face:",
   "yo": "Yo.",
   ":yo:": "Yo.",
 }
@@ -41,6 +42,7 @@ STARTER_COMMANDS = {
   "hate ": "I hate $what SO MUCH. Ugh, the worst.",
   "hate on ": "You know what I really hate? What I really hate is $what.",
   "love ": "$what is pretty much the best thing.",
+  "sigh about ": "Yeah, $what is not the best, is it?",
   # look, I know this is terrible, but I'm too lazy to handle nice little functions today.
   "scream ": "FUNCTION:UPPERCASE $what",
   "help": "FUNCTION:HELP",
@@ -65,7 +67,7 @@ CONTAIN_COMMANDS = {
   "github": "My code's at https://github.com/whereistanya/screambot. Send Tanya a PR. :computer:",
   "can you even": "I literally can't even.",
   "work": "WERK!",
-  "industry": ":poop:fire:",
+  "industry": ":poop: :fire:",
   "patriarchy": "FUNCTION:RANDOM feminism",
   "feminism": "FUNCTION:RANDOM feminism",
   "tech": "FUNCTION:RANDOM tech",
@@ -152,10 +154,13 @@ def create_response(message, bot_id):
 
   user = None
   command = None
-  # First handle commands starting with a username (@screambot or screambot)
-  if message.lower().startswith("screambot "):
+  # First handle commands starting with "screambot" or "Screambot:" or similar. Not
+  # "@screambot" though. That comes next.
+  if message.lower().startswith("screambot"):
     user = "screambot"
-    command = message[len("screambot "):].lstrip()
+    command = message.split(' ', 1)[1].lstrip()  # everything but the first word.
+    print command
+  # Next try things starting with a username, which we get as an internal uid like <@WABC123>.
   else:
     matches = re.search(COMMAND_REGEX, message)
     if matches:
