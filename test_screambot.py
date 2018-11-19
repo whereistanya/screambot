@@ -6,7 +6,6 @@ import responses
 class TestScreambot(unittest.TestCase):
 
   def test_response(self):
-
     bot_id = "UA1234567"
     cases = {
       "<@UA1234567> hug": ":virtualhug:",
@@ -26,6 +25,7 @@ class TestScreambot(unittest.TestCase):
       "<@UA1234567> I love you, screambot": "It's mutual, I promise you.",
       "<@UAXXXXXXX> what is screambot?": "You're talking about me <3",
       "<@UA1234567> blame systemd": "Grr, systemd strikes again.",
+      "<@UA1234567> destroy Mountain View": ":t-rex: RARRRRR DESTROY MOUNTAIN VIEW :t-rex:",
       "screambot blame the rain": "Grr, the rain strikes again.",
       "Screambot yo": "Yo.",
       "Screambot, yo": "Yo.",
@@ -58,6 +58,19 @@ class TestScreambot(unittest.TestCase):
     response = responses.create_response(case, bot_id)
     quotes = responses.quotes["feminism"]
     self.assertTrue(response in quotes)
+
+  def test_rage(self):
+      expected = ":t-rex: RARRRRR DESTROY CITY :t-rex:"
+      got = responses.rage("CITY")
+      self.assertEqual(expected, got)
+
+      expected = ":t-rex: RARRRRR DESTROY CITY :t-rex:"
+      got = responses.rage("CITY", 0.9)
+      self.assertEqual(expected, got)
+
+      expected = ":t-rex: RARRRRR DESTROY CITY :t-rex: (*writes sternly worded letter*)"
+      got = responses.rage("CITY", 0.1)
+      self.assertTrue(expected, got)
 
 if __name__ == 'main__':
     unittest.main()

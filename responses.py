@@ -32,6 +32,7 @@ STANDALONE_COMMANDS = {
 STARTER_COMMANDS = {
   "announce that ": ":star: :star: EXCUSE ME HI I HAVE AN ANNOUNCEMENT: $what :star: :star:",
   "announce ": ":star: :star: EXCUSE ME HI I HAVE AN ANNOUNCEMENT: $what :star: :star:",
+  "destroy ": "FUNCTION:RAGE $what",
   "freak out about ": "I am LOSING MY SHIT about $what right now.",
   "lose it about ": "AGH what is the deal with $what?",
   "react to ": "EXCUSE ME HI I have opinions about $what",
@@ -43,7 +44,6 @@ STARTER_COMMANDS = {
   "hate on ": "You know what I really hate? What I really hate is $what.",
   "love ": "$what is pretty much the best thing.",
   "sigh about ": "Yeah, $what is not the best, is it?",
-  # look, I know this is terrible, but I'm too lazy to handle nice little functions today.
   "scream ": "FUNCTION:UPPERCASE $what",
   "help": "FUNCTION:HELP",
   "what can you ": "FUNCTION:HELP",
@@ -73,6 +73,7 @@ CONTAIN_COMMANDS = {
   "tech": "FUNCTION:RANDOM tech",
   "inspire": "FUNCTION:RANDOM tech",
   "inspiration": "FUNCTION:RANDOM tech",
+  "rage": "FUNCTION:RAGE",
   "&lt;3": ":heart:",
 }
 
@@ -117,6 +118,17 @@ quotes = {
   ]
 }
 
+cities = ["Beijing", "Berlin", "Cairo", "Dhaka", "Chicago", "Karachi", "Houston", "Istanbul", "Jakarta", "Johannesburg", "Kinshasa", "Lagos", "London", "Los Angeles", "Manila", "Moscow", "Mexico City", "Mumbai", "New york", "Paris", "Phoenix", "Seoul", "Shanghai", "Sao Paolo", "Shenzen", "Sydney", "Tianjin", "Tokyo",]
+
+def rage(city=None, rage_level=1.0):
+  """Destroys a major city."""
+  if not city:
+    city = random.choice(cities)
+  s = ":t-rex: RARRRRR DESTROY %s :t-rex:" % city.upper()
+  if rage_level < 0.2:
+    s += " (*writes a sternly worded letter to their newspaper*)"
+  return s
+
 def random_quote(key):
   """Returns a quote from the quotes dict."""
   if key in quotes:
@@ -159,7 +171,6 @@ def create_response(message, bot_id):
   if message.lower().startswith("screambot"):
     user = "screambot"
     command = message.split(' ', 1)[1].lstrip()  # everything but the first word.
-    print command
   # Next try things starting with a username, which we get as an internal uid like <@WABC123>.
   else:
     matches = re.search(COMMAND_REGEX, message)
@@ -198,6 +209,9 @@ def create_response(message, bot_id):
         if string.startswith("FUNCTION:RANDOM "):
           stripped = string[len("FUNCTION:RANDOM "):]
           return random_quote(stripped)
+        if string.startswith("FUNCTION:RAGE "):
+          stripped = string[len("FUNCTION:RAGE "):]
+          return rage(city=stripped)
         return string
 
     # A command that contains a word that wasn't caught by the STARTER_COMMANDS.
@@ -209,6 +223,9 @@ def create_response(message, bot_id):
         if string.startswith("FUNCTION:RANDOM "):
           stripped = string[len("FUNCTION:RANDOM "):]
           return random_quote(stripped)
+        if string.startswith("FUNCTION:RAGE"):
+          rage_level = random.random()
+          return rage(city=None, rage_level=rage_level)
         return string
 
     # A direct command we don't know how to handle.
