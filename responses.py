@@ -62,6 +62,7 @@ STARTER_COMMANDS_EE = {
 
 # It's a direct command to @screambot and it contains this text.
 CONTAIN_COMMANDS = {
+  "birthday": ":birthday:",
   "botsnack": ":cookie:",
   "code": "My code's at https://github.com/whereistanya/screambot. Send Tanya a PR. :computer:",
   "github": "My code's at https://github.com/whereistanya/screambot. Send Tanya a PR. :computer:",
@@ -79,6 +80,7 @@ CONTAIN_COMMANDS = {
 
 # It's not a command but it contains the word screambot and this text.
 CONVERSATION = {
+  "birthday": ":birthday:",
   "botsnack": ":cookie:",
   "code": "My code's at https://github.com/whereistanya/screambot. Send Tanya a PR.",
   "github": "My code's at https://github.com/whereistanya/screambot. Send Tanya a PR.",
