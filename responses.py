@@ -18,7 +18,7 @@ STANDALONE_COMMANDS = {
   "thanks": "Any time, friend.",
   "hug": ":virtualhug:",
   "flip": "(╯°□°）╯︵ ┻━┻)",
-  "tableflip ": "╯°□°）╯︵ ┻━�",
+  "tableflip": "(╯°□°）╯︵ ┻━┻)",
   ":heart:": ":heart:",
   "&lt;3": ":heart:",
   ":poop:": "Seriously.",
