@@ -18,6 +18,7 @@ STANDALONE_COMMANDS = {
   "thanks": "Any time, friend.",
   "hug": ":virtualhug:",
   "flip": "(╯°□°）╯︵ ┻━┻)",
+  "tableflip ": "╯°□°）╯︵ ┻━�",
   ":heart:": ":heart:",
   "&lt;3": ":heart:",
   ":poop:": "Seriously.",
@@ -40,6 +41,7 @@ STARTER_COMMANDS = {
   "hug ": ":virtualhug: for $what",
   "blame ": "Grr, $what strikes again.",
   "flip ": "╯°□°）╯︵ ┻━�",
+  "tableflip ": "╯°□°）╯︵ ┻━�",
   "hate ": "I hate $what SO MUCH. Ugh, the worst.",
   "hate on ": "You know what I really hate? What I really hate is $what.",
   "love ": "$what is pretty much the best thing.",
@@ -75,6 +77,7 @@ CONTAIN_COMMANDS = {
   "inspire": "FUNCTION:RANDOM tech",
   "inspiration": "FUNCTION:RANDOM tech",
   "rage": "FUNCTION:RAGE",
+  "destroy": "FUNCTION:RAGE",
   "&lt;3": ":heart:",
 }
 
