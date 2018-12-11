@@ -45,8 +45,9 @@ STARTER_COMMANDS = {
   "hate ": "I hate $what SO MUCH. Ugh, the worst.",
   "hate on ": "You know what I really hate? What I really hate is $what.",
   "love ": "$what is pretty much the best thing.",
-  "sigh about ": "Yeah, $what is not the best, is it?",
+  "save me from ": ":fire: pew :fire:pew :fire: I have exploded all the $what. :fire: You're welcome. :fire:",
   "scream ": "FUNCTION:UPPERCASE $what",
+  "sigh about ": "Yeah, $what is not the best, is it?",
   "help": "FUNCTION:HELP",
   "what can you ": "FUNCTION:HELP",
 }
