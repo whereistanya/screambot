@@ -10,12 +10,14 @@ COMMAND_REGEX = "^<@(|[WU].+?)>[:,]? (.+)"
 # It's a command to @screambot and this is the entire thing.
 STANDALONE_COMMANDS = {
   "botsnack": ":cookie:",
+  "cry": "blooooohooohooohooo :sob:",
   "freak out": "*breathes into a paper bag*",
   "lose it": "I am kind of losing my shit right now?",
   "lose your shit": "FUUUUUUUUUUUUUUUUUUUUUUUCK",
   "scream": "AAAARRGGHHHHHHHHHHHHHH",
   "thank you": "Glad to help <3",
   "thanks": "Any time, friend.",
+  "grimace": "oof :grimacing:",
   "hug": ":virtualhug:",
   "flip": "(╯°□°）╯︵ ┻━┻)",
   "tableflip": "(╯°□°）╯︵ ┻━┻)",
@@ -23,6 +25,8 @@ STANDALONE_COMMANDS = {
   "&lt;3": ":heart:",
   ":poop:": "Seriously.",
   "sigh": ":slightly_frowning_face:",
+  "sob": "blooooohooohooohooo :sob:",
+  "whimper": "eep",
   "yo": "Yo.",
   ":yo:": "Yo.",
 }
