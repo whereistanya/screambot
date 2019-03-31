@@ -1,0 +1,23 @@
+# systemd file for screambot. Drop this at
+# /etc/systemd/system/screambot.service and enable it to start at boot with
+# systemctl enable screambot. It logs to regular syslog so grep for
+# screambot in /var/log/daemon.log or equivalent.
+# You probably need to change the directory in WorkingDirectory= and
+# ExecStart= to point at wherever the code is.
+
+[Unit]
+Description=Screambot Slack bot
+After=syslog.target network.target network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/tanya/run/screambot
+ExecStart=/home/tanya/run/screambot/screambot.py
+Restart=always
+LimitNOFILE=10000
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=screambot
+
+[Install]
+WantedBy=default.target
