@@ -19,7 +19,7 @@ I use the smallest size of GCE VM. Any server will do so long as slack can get t
 ## Get the code working
 * Install the slackclient module. On ubuntu that's:  
 
-`sudo apt-get install python-pip`
+`sudo apt-get install python-pip`  
 `sudo pip install slackclient`
 
 * Grab the Bot User OAuth Access Token from the OAuth and Permissions tab for your app on https://api.slack.com/apps. Put it in a file called secret.py, like
