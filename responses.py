@@ -10,6 +10,7 @@ COMMAND_REGEX = "^<@(|[WU].+?)>[:,]? (.+)"
 # It's a command to @screambot and this is the entire thing.
 STANDALONE_COMMANDS = {
   "botsnack": ":cookie:",
+  "celebrate": ":tada: :tada: :cake: :raised_hands: :raised_hands: :champagne: :doughnut: :sparkles: :sparkler: :tada: ",
   "cry": "blooooohooohooohooo :sob:",
   "freak out": "*breathes into a paper bag*",
   "lose it": "I am kind of losing my shit right now?",
