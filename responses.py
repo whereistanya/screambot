@@ -39,6 +39,7 @@ STARTER_COMMANDS = {
   "announce that ": ":star: :star: EXCUSE ME HI I HAVE AN ANNOUNCEMENT: $what :star: :star:",
   "announce ": ":star: :star: EXCUSE ME HI I HAVE AN ANNOUNCEMENT: $what :star: :star:",
   "blame ": "Grr, $what strikes again.",
+  "celebrate ": ":sparkles: :raised_hands: :raised_hands: hurray for $what!! :tada: :tada: :sparkles:",
   "destroy ": "FUNCTION:RAGE $what",
   "flip ": "╯°□°）╯︵ ┻━�",
   "freak out about ": "I am LOSING MY SHIT about $what right now.",
