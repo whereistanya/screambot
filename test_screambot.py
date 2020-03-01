@@ -59,6 +59,9 @@ class TestScreambot(unittest.TestCase):
     quotes = responses.quotes["feminism"]
     self.assertTrue(response in quotes)
 
+  def test_why(self):
+      self.assertEqual(responses.why(testing=True), "Nobody knows :-(")
+
   def test_rage(self):
       expected = ":t-rex: RARRRRR DESTROY CITY :t-rex:"
       got = responses.rage("CITY")

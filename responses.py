@@ -66,7 +66,6 @@ STARTER_COMMANDS_EE = {
   "is ": "I'm just a small bot making my way in the world.",
   "I love you": "It's mutual, I promise you.",
   "&lt;3": "Right back at you <3",
-  "why ": "I'm a simple bot. It is not for me to speculate.",
   "good bot": ":heart:",
 }
 
@@ -87,6 +86,8 @@ CONTAIN_COMMANDS = {
   "rage": "FUNCTION:RAGE",
   "destroy": "FUNCTION:RAGE",
   "&lt;3": ":heart:",
+  "food": ":pizza:",
+  "why": "FUNCTION:WHY",
 }
 
 # It's not a command but it contains the word screambot and this text.
@@ -133,6 +134,26 @@ quotes = {
 
 cities = ["Beijing", "Berlin", "Cairo", "Dhaka", "Chicago", "Karachi", "Houston", "Istanbul", "Jakarta", "Johannesburg", "Kinshasa", "Lagos", "London", "Los Angeles", "Manila", "Moscow", "Mexico City", "Mumbai", "New york", "Paris", "Phoenix", "Seoul", "Shanghai", "Sao Paolo", "Shenzen", "Sydney", "Tianjin", "Tokyo",]
 
+reasons = ["Like, if we understood that, we'd understand a lot of things",
+           "I'm just a simple bot. These questions are too big for me.",
+           "Because society, mostly?",
+           "It's a surprisingly elaborate plot.",
+           "Space weasels, pretty sure.",
+           "It can probably be traced back to the French revolution.",
+           "I'm not sure.",
+           "I blame the parents.",
+           "Because they killed Google Reader.",
+           "It's a good question, and the answer is: I do not know.",
+           "42",
+           "I can answer everything... except that.",
+           "I need to think about that. Ask me again tomorrow?",
+           "I wish I knew.",
+           ":woman-shrugging",
+           ":upside_down_face",
+           "I don't know but I bet someone in #random has an idea.",
+          ]
+
+
 def rage(city=None, rage_level=1.0):
   """Destroys a major city."""
   if not city:
@@ -141,6 +162,12 @@ def rage(city=None, rage_level=1.0):
   if rage_level < 0.2:
     s += " (*writes a sternly worded letter to their newspaper*)"
   return s
+
+def why(testing=False):
+    reason = random.choice(reasons)
+    if testing:
+        return "Nobody knows :-("
+    return reason
 
 def random_quote(key):
   """Returns a quote from the quotes dict."""
@@ -239,6 +266,9 @@ def create_response(message, bot_id):
         if string.startswith("FUNCTION:RAGE"):
           rage_level = random.random()
           return rage(city=None, rage_level=rage_level)
+        if string.startswith("FUNCTION:WHY"):
+          stripped = string[len("FUNCTION:WHY"):]
+          return why()
         return string
 
     # A direct command we don't know how to handle.
