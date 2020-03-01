@@ -13,7 +13,7 @@ class TestScreambot(unittest.TestCase):
       "<@UA1234567> :love:": ":love::love::love:!",
       "<@UA1234567>: :cat:": ":cat::cat::cat:!",
       "<@UA1234567> can you even believe it:": "I literally can't even.",
-      "<@UA1234567> lose it about pocketless dresses": "AGH what is the deal with pocketless dresses?",
+      "<@UA1234567> lose it about pocketless dresses": "AGH what is GOING ON with pocketless dresses? WHY is it LIKE THAT?",
       "<@UA1234567> hate spam calls": "I hate spam calls SO MUCH. Ugh, the worst.",
       "<@UA1234567>  hate double whitespace": "I hate double whitespace SO MUCH. Ugh, the worst.",
       "<@UA1234567> scream the scream code is a hack, Tanya.": "THE SCREAM CODE IS A HACK, TANYA.",
