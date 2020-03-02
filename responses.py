@@ -68,6 +68,12 @@ STARTER_COMMANDS_EE = {
   "I love you": "It's mutual, I promise you.",
   "&lt;3": "Right back at you <3",
   "good bot": ":heart:",
+  "hello": "FUNCTION:HI",
+  "howdy": "FUNCTION:HI",
+  "hi": "FUNCTION:HI",
+  "what's up": "FUNCTION:HI",
+  "hey": "FUNCTION:HI",
+  "ello": "FUNCTION:HI",
 }
 
 # It's a direct command to @screambot and it contains this text.
@@ -155,6 +161,7 @@ reasons = ["Like, if we understood that, we'd understand a lot of things",
            "I don't know but I bet someone in #random has an idea.",
           ]
 
+greetings = ["Hi!", "Hi there!", "Hello!", "Hey there!", "Ello!"]
 
 def rage(city=None, rage_level=1.0):
   """Destroys a major city."""
@@ -170,6 +177,13 @@ def why(testing=False):
     if testing:
         return "Nobody knows :-("
     return reason
+
+def hi(testing=False):
+    greeting = random.choice(greetings)
+    if testing:
+        return "Hi!"
+    return greeting
+
 
 def random_quote(key):
   """Returns a quote from the quotes dict."""
@@ -254,6 +268,8 @@ def create_response(message, bot_id):
         if string.startswith("FUNCTION:RAGE "):
           stripped = string[len("FUNCTION:RAGE "):]
           return rage(city=stripped)
+        if string.startswith("FUNCTION:HI"):
+          return hi()
         return string
 
     # A command that contains a word that wasn't caught by the STARTER_COMMANDS.
