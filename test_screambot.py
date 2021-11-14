@@ -26,6 +26,7 @@ class TestScreambot(unittest.TestCase):
       "<@UAXXXXXXX> what is screambot?": "You're talking about me <3",
       "<@UA1234567> blame systemd": "Grr, systemd strikes again.",
       "<@UA1234567> destroy Mountain View": ":t-rex: RARRRRR DESTROY MOUNTAIN VIEW :t-rex:",
+      u"<@UA1234567>\xa0scream something": "SOMETHING",
       "screambot blame the rain": "Grr, the rain strikes again.",
       "Screambot yo": "Yo.",
       "Screambot, yo": "Yo.",
