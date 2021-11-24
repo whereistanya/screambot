@@ -21,8 +21,8 @@ STANDALONE_COMMANDS = {
   "thanks": "Any time, friend.",
   "grimace": "oof :grimacing:",
   "hug": ":virtualhug:",
-  "flip": "(╯°□°）╯︵ ┻━┻)",
-  "tableflip": "(╯°□°）╯︵ ┻━┻)",
+  "flip": "(â•¯Â°â–¡Â°ï¼‰â•¯ï¸µ â”»â”â”»)",
+  "tableflip": "(â•¯Â°â–¡Â°ï¼‰â•¯ï¸µ â”»â”â”»)",
   ":heart:": ":heart:",
   "&lt;3": ":heart:",
   ":poop:": "Seriously.",
@@ -44,7 +44,7 @@ STARTER_COMMANDS = {
   "celebrate ": ":sparkles: :raised_hands: :raised_hands: hurray for $what!! :tada: :tada: :sparkles:",
   "cheer ": ":sparkles: :raised_hands: :raised_hands: hurray $what!! :tada: :tada: :sparkles:",
   "destroy ": "FUNCTION:RAGE $what",
-  "flip ": "╯°□°）╯︵ ┻━�",
+  "flip ": "â•¯Â°â–¡Â°ï¼‰â•¯ï¸µ â”»â”â",
   "freak out about ": "I am LOSING MY SHIT about $what right now.",
   "fuck ": "$what needs to fuck off right now :rage:",
   "hug ": ":virtualhug: for $what",
@@ -57,7 +57,7 @@ STARTER_COMMANDS = {
   "save me from ": ":fire: pew :fire:pew :fire: I have exploded all the $what. :fire: You're welcome. :fire:",
   "scream ": "FUNCTION:UPPERCASE $what",
   "sigh about ": "Yeah, $what is not the best, is it? :tea:?",
-  "tableflip ": "╯°□°）╯︵ ┻━�",
+  "tableflip ": "â•¯Â°â–¡Â°ï¼‰â•¯ï¸µ â”»â”â",
   "help": "FUNCTION:HELP",
   "what can you ": "FUNCTION:HELP",
 }
@@ -111,6 +111,7 @@ CONVERSATION = {
   "love": ":heart_eyes:",
   "good": ":heart_eyes:",
   "&lt;3": ":heart:",
+  "sedgwick": "Don't get me started! Sedgwick's servers should all melt permanently. Preferably without backups.",
 }
 
 quotes = {
