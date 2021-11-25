@@ -13,7 +13,6 @@ STANDALONE_COMMANDS = {
   "celebrate": ":tada: :tada: :cake: :raised_hands: :raised_hands: :champagne: :doughnut: :sparkles: :sparkler: :tada: ",
   "cry": "blooooohooohooohooo :sob:",
   "freak out": "*breathes into a paper bag*",
-  "idea": ":bulb:",
   "lose it": "I am kind of losing my shit right now?",
   "lose your shit": "FUUUUUUUUUUUUUUUUUUUUUUUCK",
   "scream": "AAAARRGGHHHHHHHHHHHHHH",
@@ -222,12 +221,6 @@ def create_response(message, bot_id):
   # Only trigger on sentences containing "screambot" or @screambot's UID.
   if bot_id.lower() not in message.lower() and "screambot" not in message.lower():
     return
-
-  # Slack sends us non-blocking space characters instead of spaces if you copy 
-  # and paste the message to screambot. Probably this is an opportunity to do
-  # something intelligent with utf-8 encoding but I'm lazily replacing the characters
-  # instead. Haha this code sucks so much. <3
-  message = message.replace(u"\xa0", " ")
 
   user = None
   command = None
