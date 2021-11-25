@@ -35,10 +35,11 @@ class TestScreambot(unittest.TestCase):
       "thanks, @screambot": "Any time.",
       "good work, screambot": ":heart_eyes:",
       "&lt;3 screambot": ":heart:",
+      "<@UA1234567> someunknownthing": "Sorry, some_user, I don't know how to someunknownthing",
     }
 
     for message, expected in cases.iteritems():
-      response = responses.create_response(message, bot_id)
+      response = responses.create_response(message, bot_id, "some_user")
       self.assertEqual(response, expected)
 
   def test_help(self):

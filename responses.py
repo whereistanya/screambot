@@ -209,12 +209,13 @@ def help_message():
          "https://github.com/whereistanya/screambot\n" +
          "Commands: " + "; ".join(sorted(commands)))
 
-def create_response(message, bot_id):
+def create_response(message, bot_id, speaker=None):
   """Return a response to the message if it's about screambot.
 
   Args:
     message: (str) The entire line that someone typed. Slack sends these to us.
     bot_id: (str) Screambot's userid. It looks like "@U1234566"
+    speaker: (str) The name of the person who invoked screambot.
   Returns:
     (str) A string to respond with or None.
   """
@@ -292,7 +293,7 @@ def create_response(message, bot_id):
         return string
 
     # A direct command we don't know how to handle.
-    return "I don't know how to %s" % command
+    return "Sorry, %s, I don't know how to %s" % (speaker, command)
  
   # Now handle messages that don't start with @screambot/screambot, but use
   # her name somewhere in the sentence.
@@ -305,5 +306,5 @@ def create_response(message, bot_id):
         return random_quote(stripped)
       return string
 
-  return "Want me to do something? Start your message with @screambot."
+  return "Want me to do something, %s? Start your message with @screambot." % speaker
 
