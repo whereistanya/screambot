@@ -10,6 +10,7 @@ COMMAND_REGEX = "^<@(|[WU].+?)>[:,]? (.+)"
 # It's a command to @screambot and this is the entire thing.
 STANDALONE_COMMANDS = {
   "botsnack": ":cookie:",
+  "cookie": ":cookie:",
   "celebrate": ":tada: :tada: :cake: :raised_hands: :raised_hands: :champagne: :doughnut: :sparkles: :sparkler: :tada: ",
   "cry": "blooooohooohooohooo :sob:",
   "freak out": "*breathes into a paper bag*",
@@ -66,7 +67,7 @@ STARTER_COMMANDS = {
 STARTER_COMMANDS_EE = {
   "you": "I promise to always try.",
   "is ": "I'm just a small bot making my way in the world.",
-  "I love you": "It's mutual, I promise you.",
+  "i love you": "It's mutual, I promise you.",
   "&lt;3": "Right back at you <3",
   "good bot": ":heart:",
   "hello": "FUNCTION:HI",
@@ -81,6 +82,7 @@ STARTER_COMMANDS_EE = {
 CONTAIN_COMMANDS = {
   "birthday": ":birthday:",
   "botsnack": ":cookie:",
+  "cookie": ":cookie:",
   "code": "My code's at https://github.com/whereistanya/screambot. Send Tanya a PR. :computer:",
   "github": "My code's at https://github.com/whereistanya/screambot. Send Tanya a PR. :computer:",
   "can you even": "I literally can't even.",
@@ -95,6 +97,7 @@ CONTAIN_COMMANDS = {
   "destroy": "FUNCTION:RAGE",
   "&lt;3": ":heart:",
   "food": ":pizza:",
+  "systemctl": "because systemctl is bollocks",
   "tea": "Always here for afternoontea :tea: :female-technologist:",
   "why": "FUNCTION:WHY",
 }
@@ -159,7 +162,7 @@ reasons = ["Like, if we understood that, we'd understand a lot of things",
            "I need to think about that. Ask me again tomorrow?",
            "I wish I knew.",
            ":woman-shrugging",
-           ":upside_down_face",
+           ":upside_down_face:",
            "I don't know but I bet someone in #random has an idea.",
           ]
 
@@ -256,10 +259,10 @@ def create_response(message, bot_id, speaker=None):
     starts.update(STARTER_COMMANDS_EE.copy())
 
     for text in starts.keys():
-      if command.startswith(text.lower()):
+      if command.lower().startswith(text.lower()):
         thing = command[len(text):] # Everything but the starter words
         # The template replaces "$what" with the rest of the line.
-        string = Template(starts[text]).safe_substitute(what=thing)
+        string = Template(starts[text.lower()]).safe_substitute(what=thing)
         if string.startswith("FUNCTION:UPPERCASE "):
           stripped = string[len("FUNCTION:UPPERCASE "):]
           return stripped.upper()
@@ -278,9 +281,9 @@ def create_response(message, bot_id, speaker=None):
     # A command that contains a word that wasn't caught by the STARTER_COMMANDS.
     # The template is to replace "$what" with the entire command.
     for text in CONTAIN_COMMANDS.keys():
-      if text in command:
-        template = Template(CONTAIN_COMMANDS[text])
-        string = template.safe_substitute(what=command)
+      if text.lower() in command.lower():
+        template = Template(CONTAIN_COMMANDS[text.lower()])
+        string = template.safe_substitute(what=command.lower())
         if string.startswith("FUNCTION:RANDOM "):
           stripped = string[len("FUNCTION:RANDOM "):]
           return random_quote(stripped)
@@ -298,9 +301,9 @@ def create_response(message, bot_id, speaker=None):
   # Now handle messages that don't start with @screambot/screambot, but use
   # her name somewhere in the sentence.
   for text in CONVERSATION.keys():
-    if text in message.lower():
-      template = Template(CONVERSATION[text])
-      string = template.safe_substitute(what=text)
+    if text.lower() in message.lower():
+      template = Template(CONVERSATION[text.lower()])
+      string = template.safe_substitute(what=text.lower())
       if string.startswith("FUNCTION:RANDOM "):
         stripped = string[len("FUNCTION:RANDOM "):]
         return random_quote(stripped)

@@ -23,6 +23,7 @@ class TestScreambot(unittest.TestCase):
       "screambot scream I love cats": "I LOVE CATS",
       "<@UA1234567> scream <system> is broken": "<SYSTEM> IS BROKEN",
       "<@UA1234567> I love you, screambot": "It's mutual, I promise you.",
+      "<@UA1234567> i love you, screambot": "It's mutual, I promise you.",
       "<@UAXXXXXXX> what is screambot?": "You're talking about me <3",
       "<@UA1234567> blame systemd": "Grr, systemd strikes again.",
       "<@UA1234567> destroy Mountain View": ":t-rex: RARRRRR DESTROY MOUNTAIN VIEW :t-rex:",
