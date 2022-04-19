@@ -12,6 +12,7 @@ STANDALONE_COMMANDS = {
   "botsnack": ":cookie:",
   "cookie": ":cookie:",
   "celebrate": ":tada: :tada: :cake: :raised_hands: :raised_hands: :champagne: :doughnut: :sparkles: :sparkler: :tada: ",
+  "cheer": ":sparkles: :raised_hands: :raised_hands: :tada: :tada: :sparkles:",
   "cry": "blooooohooohooohooo :sob:",
   "freak out": "*breathes into a paper bag*",
   "lose it": "I am kind of losing my shit right now?",
