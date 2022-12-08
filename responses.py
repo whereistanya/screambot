@@ -83,6 +83,7 @@ STARTER_COMMANDS_EE = {
 CONTAIN_COMMANDS = {
   "birthday": ":birthday:",
   "botsnack": ":cookie:",
+  "chatgpt": "I'm a little intimidated by ChatGPT to be honest. But glad of more bot friends.",
   "cookie": ":cookie:",
   "code": "My code's at https://github.com/whereistanya/screambot. Send Tanya a PR. :computer:",
   "github": "My code's at https://github.com/whereistanya/screambot. Send Tanya a PR. :computer:",
@@ -98,7 +99,8 @@ CONTAIN_COMMANDS = {
   "destroy": "FUNCTION:RAGE",
   "&lt;3": ":heart:",
   "food": ":pizza:",
-  "systemctl": "because systemctl is bollocks",
+  "systemd": "systemd is strange and mysterious. Bring back init scripts!",
+  "systemctl": "systemctl is strange and mysterious. Bring back init scripts!",
   "tea": "Always here for afternoontea :tea: :female-technologist:",
   "why": "FUNCTION:WHY",
 }
