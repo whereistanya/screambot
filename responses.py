@@ -235,7 +235,11 @@ def create_response(message, bot_id, speaker=None):
   # "@screambot" though. That comes next.
   if message.lower().startswith("screambot"):
     user = "screambot"
-    command = message.split(' ', 1)[1].lstrip()  # everything but the first word.
+    try:
+        command = message.split(' ', 1)[1].lstrip()  # everything but the first word.
+    except IndexError:
+        command = None
+        
   # Next try things starting with a username, which we get as an internal uid like <@WABC123>.
   else:
     matches = re.search(COMMAND_REGEX, message)
