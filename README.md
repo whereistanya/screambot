@@ -32,6 +32,12 @@ and run
 
 `$ py.test test_screambot.py`
 
+## Optional: Change the logging
+It's currently set up to log to Google Cloud Logging. Comment out those parts if you
+aren't on GCE, or don't want to deal with it. If you want it, get the library with
+`pip install google-cloud-logging`, enable the Cloud Logging API in the cloud console, and add
+the "cloud platform" api scope for the GCE instance.
+
 ## Configure systemd to keep the bot running.
 
 There's a systemd config at config/screambot.service 
