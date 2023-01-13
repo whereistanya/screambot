@@ -77,7 +77,11 @@ def main():
       if new_cache:
         user_cache = new_cache
                                       
-    events = slack_client.rtm_read()
+    try:  
+      events = slack_client.rtm_read()
+    except slackclient.server.SlackConnectionError:
+      logging.error("Got a connection error. Reconnecting.")
+      slack_client.rtm_connect()
     for event in events:
       text = None
       # Only react to new messages and message edits.
