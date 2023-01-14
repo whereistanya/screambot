@@ -8,8 +8,7 @@ import time
 import re
 import sys
 from string import Template
-
-from slackclient import SlackClient
+import slackclient
 
 import responses
 import secret
@@ -56,7 +55,7 @@ def main():
   logclient = google.cloud.logging.Client()
   logclient.setup_logging() # Send regular python logs to google cloud logging
 
-  slack_client = SlackClient(secret.SLACK_BOT_TOKEN)
+  slack_client = slackclient.SlackClient(secret.SLACK_BOT_TOKEN)
   if slack_client.rtm_connect(with_team_state=False):
     logging.info("Screambot = yes!")
   else:
