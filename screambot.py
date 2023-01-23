@@ -42,9 +42,6 @@ def refresh_cache(slack_client):
       user_cache[uid] = profile_name
     else:
       user_cache[uid] = name
-  # TODO: adding this trace in January 2023. Remove it after the script's been
-  # well behaved for a while. Log line should only fire around once a day but we'll see.
-  logging.info("Refreshing the user cache: %d entries." % len(user_cache))
   return user_cache, time.time()
 
 
@@ -79,7 +76,6 @@ def main():
     try:  
       events = slack_client.rtm_read()
     except slackclient.server.SlackConnectionError:
-      logging.error("Got a connection error. Reconnecting.")
       slack_client.rtm_connect()
     for event in events:
       text = None
