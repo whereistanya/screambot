@@ -38,29 +38,38 @@ STANDALONE_COMMANDS = {
 # It's a direct command to @screambot and it starts with this.
 # "$what" will be replaced with the thing to scream about.
 # TODO: Add "$who" and figure out how to talk to.
-STARTER_COMMANDS = {
+
+# Do multiword commands first. This is shite and I should rewrite this whole
+# thing some time.
+STARTER_COMMANDS_LONG = {
   "announce that ": ":star: :star: EXCUSE ME HI I HAVE AN ANNOUNCEMENT: $what :star: :star:",
+  "freak out about ": "I am LOSING MY SHIT about $what right now.",
+  "hate on ": "You know what I really hate? What I really hate is $what.",
+  "rant about": "AUGH seriously though you know what sucks?? $what, that's what sucks.",
+  "rant on": "AUGH seriously though you know what sucks?? $what, that's what sucks.",
+  "lose it about ": "AGH what is GOING ON with $what? WHY is it LIKE THAT?",
+  "lose your shit about ": "FUUUUUUUUUUUUCK I am NOT able to deal with $what AAARGGHHHH",
+  "react to ": "EXCUSE ME HI we need to talk about $what. How's everyone feeling about that?",
+  "save me from ": ":fire: pew :fire:pew :fire: I have exploded all the $what. :fire: You're welcome. :fire:",
+  "sigh about ": "Yeah, $what is not the best, is it? :tea:?",
+  "what can you ": "FUNCTION:HELP",
+}
+
+STARTER_COMMANDS = {
   "announce ": ":star: :star: EXCUSE ME HI I HAVE AN ANNOUNCEMENT: $what :star: :star:",
   "blame ": "Grr, $what strikes again.",
   "celebrate ": ":sparkles: :raised_hands: :raised_hands: hurray for $what!! :tada: :tada: :sparkles:",
   "cheer ": ":sparkles: :raised_hands: :raised_hands: hurray $what!! :tada: :tada: :sparkles:",
   "destroy ": "FUNCTION:RAGE $what",
   "flip": "(╯°□°）╯︵ ┻━┻)",
-  "freak out about ": "I am LOSING MY SHIT about $what right now.",
   "fuck ": "$what needs to fuck off right now :rage:",
   "hug ": ":virtualhug: for $what",
   "hate ": "I hate $what SO MUCH. Ugh, the worst.",
-  "hate on ": "You know what I really hate? What I really hate is $what.",
-  "lose it about ": "AGH what is GOING ON with $what? WHY is it LIKE THAT?",
-  "lose your shit about ": "FUUUUUUUUUUUUCK I am NOT able to deal with $what AAARGGHHHH",
+  "rant": "AUGH seriously though you know what sucks?? $what, that's what sucks.",
   "love ": "$what is pretty much the best thing.",
-  "react to ": "EXCUSE ME HI we need to talk about $what. How's everyone feeling about that?",
-  "save me from ": ":fire: pew :fire:pew :fire: I have exploded all the $what. :fire: You're welcome. :fire:",
   "scream ": "FUNCTION:UPPERCASE $what",
-  "sigh about ": "Yeah, $what is not the best, is it? :tea:?",
   "tableflip": "(╯°□°）╯︵ ┻━┻)",
   "help": "FUNCTION:HELP",
-  "what can you ": "FUNCTION:HELP",
 }
 
 # Behave exactly as starter commands but aren't in the "what can you do" list.
@@ -164,7 +173,7 @@ reasons = ["Like, if we understood that, we'd understand a lot of things",
            "I can answer everything... except that.",
            "I need to think about that. Ask me again tomorrow?",
            "I wish I knew.",
-           ":woman-shrugging",
+           ":woman-shrugging:",
            ":upside_down_face:",
            "I don't know but I bet someone in #random has an idea.",
           ]
@@ -215,6 +224,29 @@ def help_message():
          "https://github.com/whereistanya/screambot\n" +
          "Commands: " + "; ".join(sorted(commands)))
 
+
+def check_starters(command, starts):
+  for text in starts.keys():
+    if command.lower().startswith(text.lower()):
+      thing = command[len(text):] # Everything but the starter words
+      # The template replaces "$what" with the rest of the line.
+      string = Template(starts[text.lower()]).safe_substitute(what=thing)
+      if string.startswith("FUNCTION:UPPERCASE "):
+        stripped = string[len("FUNCTION:UPPERCASE "):]
+        return stripped.upper()
+      if string.startswith("FUNCTION:HELP"):
+        return help_message()
+      if string.startswith("FUNCTION:RANDOM "):
+        stripped = string[len("FUNCTION:RANDOM "):]
+        return random_quote(stripped)
+      if string.startswith("FUNCTION:RAGE "):
+        stripped = string[len("FUNCTION:RAGE "):]
+        return rage(city=stripped)
+      if string.startswith("FUNCTION:HI"):
+        return hi()
+      return string
+
+
 def create_response(message, bot_id, speaker=None):
   """Return a response to the message if it's about screambot.
 
@@ -239,7 +271,7 @@ def create_response(message, bot_id, speaker=None):
         command = message.split(' ', 1)[1].lstrip()  # everything but the first word.
     except IndexError:
         command = None
-        
+
   # Next try things starting with a username, which we get as an internal uid like <@WABC123>.
   else:
     matches = re.search(COMMAND_REGEX, message)
@@ -259,31 +291,17 @@ def create_response(message, bot_id, speaker=None):
     if re.match(":[\w_-]+:", command):
       return command + command + command + "!"
 
-    # A command at the start of the line, like scream or hate. We maintain two
-    # dictionaries: the ones we want to show up in the help message and cute
-    # surprise extras. We combine them here.
-    starts = STARTER_COMMANDS.copy()
-    starts.update(STARTER_COMMANDS_EE.copy())
-
-    for text in starts.keys():
-      if command.lower().startswith(text.lower()):
-        thing = command[len(text):] # Everything but the starter words
-        # The template replaces "$what" with the rest of the line.
-        string = Template(starts[text.lower()]).safe_substitute(what=thing)
-        if string.startswith("FUNCTION:UPPERCASE "):
-          stripped = string[len("FUNCTION:UPPERCASE "):]
-          return stripped.upper()
-        if string.startswith("FUNCTION:HELP"):
-          return help_message()
-        if string.startswith("FUNCTION:RANDOM "):
-          stripped = string[len("FUNCTION:RANDOM "):]
-          return random_quote(stripped)
-        if string.startswith("FUNCTION:RAGE "):
-          stripped = string[len("FUNCTION:RAGE "):]
-          return rage(city=stripped)
-        if string.startswith("FUNCTION:HI"):
-          return hi()
-        return string
+    # A command at the start of the line, like scream or hate. We maintain three
+    # dictionaries:
+    # STARTER_COMMANDS_LONG: multiword commands that we want to match first
+    # STARTER_COMMANDS: one word commands
+    # STARTER_COMMANDS_EE: easter eggs that don't show up in the help message,
+    # just for fun
+    for command_set in [STARTER_COMMANDS_LONG, STARTER_COMMANDS_EE,
+                         STARTER_COMMANDS]:
+      response = check_starters(command, command_set)
+      if response:
+        return response
 
     # A command that contains a word that wasn't caught by the STARTER_COMMANDS.
     # The template is to replace "$what" with the entire command.
@@ -304,7 +322,7 @@ def create_response(message, bot_id, speaker=None):
 
     # A direct command we don't know how to handle.
     return "Sorry, %s, I don't know how to %s" % (speaker, command)
- 
+
   # Now handle messages that don't start with @screambot/screambot, but use
   # her name somewhere in the sentence.
   for text in CONVERSATION.keys():
