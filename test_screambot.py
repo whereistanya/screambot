@@ -1,4 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+
+# Run the tests with
+# python3 -m pytest
 
 import unittest
 import responses
@@ -9,6 +12,9 @@ class TestScreambot(unittest.TestCase):
     bot_id = "UA1234567"
     cases = {
       "<@UA1234567> hug": ":virtualhug:",
+      "<@UA1234567> hug!": ":virtualhug:",
+      "<@UA1234567> scream?": "AAAARRGGHHHHHHHHHHHHHH",
+      "<@UA1234567> scream??!?!?!": "AAAARRGGHHHHHHHHHHHHHH",
       "<@UA1234567> hug a cat": ":virtualhug: for a cat",
       "<@UA1234567> :love:": ":love::love::love:!",
       "<@UA1234567>: :cat:": ":cat::cat::cat:!",
@@ -29,6 +35,8 @@ class TestScreambot(unittest.TestCase):
       "<@UA1234567> destroy Mountain View": ":t-rex: RARRRRR DESTROY MOUNTAIN VIEW :t-rex:",
       "screambot blame the rain": "Grr, the rain strikes again.",
       "Screambot yo": "Yo.",
+      "@screambot yo": "Yo.",
+      "@Screambot yo": "Yo.",
       "Screambot, yo": "Yo.",
       "Screambot     yo": "Yo.",
       "Screambot hate on mosquitoes": "You know what I really hate? What I really hate is mosquitoes.",
@@ -39,7 +47,7 @@ class TestScreambot(unittest.TestCase):
       "<@UA1234567> someunknownthing": "Sorry, some_user, I don't know how to someunknownthing",
     }
 
-    for message, expected in cases.iteritems():
+    for message, expected in cases.items():
       response = responses.create_response(message, bot_id, "some_user")
       self.assertEqual(response, expected)
 

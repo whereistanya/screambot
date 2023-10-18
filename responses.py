@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import random
 import re
-from string import Template
+import string
 
 COMMAND_REGEX = "^<@(|[WU].+?)>[:,]? (.+)"
 
@@ -230,21 +230,21 @@ def check_starters(command, starts):
     if command.lower().startswith(text.lower()):
       thing = command[len(text):] # Everything but the starter words
       # The template replaces "$what" with the rest of the line.
-      string = Template(starts[text.lower()]).safe_substitute(what=thing)
-      if string.startswith("FUNCTION:UPPERCASE "):
-        stripped = string[len("FUNCTION:UPPERCASE "):]
+      command = string.Template(starts[text.lower()]).safe_substitute(what=thing)
+      if command.startswith("FUNCTION:UPPERCASE "):
+        stripped = command[len("FUNCTION:UPPERCASE "):]
         return stripped.upper()
-      if string.startswith("FUNCTION:HELP"):
+      if command.startswith("FUNCTION:HELP"):
         return help_message()
-      if string.startswith("FUNCTION:RANDOM "):
-        stripped = string[len("FUNCTION:RANDOM "):]
+      if command.startswith("FUNCTION:RANDOM "):
+        stripped = command[len("FUNCTION:RANDOM "):]
         return random_quote(stripped)
-      if string.startswith("FUNCTION:RAGE "):
-        stripped = string[len("FUNCTION:RAGE "):]
+      if command.startswith("FUNCTION:RAGE "):
+        stripped = command[len("FUNCTION:RAGE "):]
         return rage(city=stripped)
-      if string.startswith("FUNCTION:HI"):
+      if command.startswith("FUNCTION:HI"):
         return hi()
-      return string
+      return command
 
 
 def create_response(message, bot_id, speaker=None):
@@ -263,9 +263,10 @@ def create_response(message, bot_id, speaker=None):
 
   user = None
   command = None
-  # First handle commands starting with "screambot" or "Screambot:" or similar. Not
-  # "@screambot" though. That comes next.
-  if message.lower().startswith("screambot"):
+  # First handle commands starting with "screambot" or "Screambot:" or similar.
+  # Usually the text '@screambot' gets translated into an id instead, but
+  # occasionally slack sends us the word instead, so we check for that too.
+  if message.lower().startswith("screambot") or message.lower().startswith("@screambot"):
     user = "screambot"
     try:
         command = message.split(' ', 1)[1].lstrip()  # everything but the first word.
@@ -287,6 +288,14 @@ def create_response(message, bot_id, speaker=None):
     if command in STANDALONE_COMMANDS:
       return STANDALONE_COMMANDS[command]
 
+    # Try the same thing again with stripped punctuation. Some commands can
+    # contain punctuation, like the very important '<3' command, so we try it
+    # first as-is, then have a second attempt so we can catch things like "scream!"
+    remove_punctuation = str.maketrans('', '', string.punctuation)
+    stripped = command.translate(remove_punctuation)
+    if stripped in STANDALONE_COMMANDS:
+      return STANDALONE_COMMANDS[stripped]
+
     # A single emoji, not counting any caught by the STANDALONE_COMMANDS.
     if re.match(":[\w_-]+:", command):
       return command + command + command + "!"
@@ -307,18 +316,18 @@ def create_response(message, bot_id, speaker=None):
     # The template is to replace "$what" with the entire command.
     for text in CONTAIN_COMMANDS.keys():
       if text.lower() in command.lower():
-        template = Template(CONTAIN_COMMANDS[text.lower()])
-        string = template.safe_substitute(what=command.lower())
-        if string.startswith("FUNCTION:RANDOM "):
-          stripped = string[len("FUNCTION:RANDOM "):]
+        template = string.Template(CONTAIN_COMMANDS[text.lower()])
+        command = template.safe_substitute(what=command.lower())
+        if command.startswith("FUNCTION:RANDOM "):
+          stripped = command[len("FUNCTION:RANDOM "):]
           return random_quote(stripped)
-        if string.startswith("FUNCTION:RAGE"):
+        if command.startswith("FUNCTION:RAGE"):
           rage_level = random.random()
           return rage(city=None, rage_level=rage_level)
-        if string.startswith("FUNCTION:WHY"):
-          stripped = string[len("FUNCTION:WHY"):]
+        if command.startswith("FUNCTION:WHY"):
+          stripped = command[len("FUNCTION:WHY"):]
           return why()
-        return string
+        return command
 
     # A direct command we don't know how to handle.
     return "Sorry, %s, I don't know how to %s" % (speaker, command)
@@ -327,12 +336,12 @@ def create_response(message, bot_id, speaker=None):
   # her name somewhere in the sentence.
   for text in CONVERSATION.keys():
     if text.lower() in message.lower():
-      template = Template(CONVERSATION[text.lower()])
-      string = template.safe_substitute(what=text.lower())
-      if string.startswith("FUNCTION:RANDOM "):
-        stripped = string[len("FUNCTION:RANDOM "):]
+      template = string.Template(CONVERSATION[text.lower()])
+      command = template.safe_substitute(what=text.lower())
+      if command.startswith("FUNCTION:RANDOM "):
+        stripped = command[len("FUNCTION:RANDOM "):]
         return random_quote(stripped)
-      return string
+      return command
 
   return "Want me to do something, %s? Start your message with @screambot." % speaker
 
