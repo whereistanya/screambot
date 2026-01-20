@@ -52,7 +52,7 @@ STARTER_COMMANDS_LONG = {
   "react to ": "EXCUSE ME HI we need to talk about $what. How's everyone feeling about that?",
   "save me from ": ":fire: pew :fire:pew :fire: I have exploded all the $what. :fire: You're welcome. :fire:",
   "sigh about ": "Yeah, $what is not the best, is it? :tea:?",
-  "what can you ": "FUNCTION:HELP",
+  "what can you ": lambda _: help_message(),
 }
 
 STARTER_COMMANDS = {
@@ -60,16 +60,16 @@ STARTER_COMMANDS = {
   "blame ": "Grr, $what strikes again.",
   "celebrate ": ":sparkles: :raised_hands: :raised_hands: hurray for $what!! :tada: :tada: :sparkles:",
   "cheer ": ":sparkles: :raised_hands: :raised_hands: hurray $what!! :tada: :tada: :sparkles:",
-  "destroy ": "FUNCTION:RAGE $what",
+  "destroy ": lambda city: rage(city=city),
   "flip": "(╯°□°）╯︵ ┻━┻)",
   "fuck ": "$what needs to fuck off right now :rage:",
   "hug ": ":virtualhug: for $what",
   "hate ": "I hate $what SO MUCH. Ugh, the worst.",
   "rant": "AUGH seriously though you know what sucks?? $what, that's what sucks.",
   "love ": "$what is pretty much the best thing.",
-  "scream ": "FUNCTION:UPPERCASE $what",
+  "scream ": lambda what: what.upper(),
   "tableflip": "(╯°□°）╯︵ ┻━┻)",
-  "help": "FUNCTION:HELP",
+  "help": lambda _: help_message(),
 }
 
 # Behave exactly as starter commands but aren't in the "what can you do" list.
@@ -80,12 +80,12 @@ STARTER_COMMANDS_EE = {
   "i love you": "It's mutual, I promise you.",
   "&lt;3": "Right back at you <3",
   "good bot": ":heart:",
-  "hello": "FUNCTION:HI",
-  "howdy": "FUNCTION:HI",
-  "hi": "FUNCTION:HI",
-  "what's up": "FUNCTION:HI",
-  "hey": "FUNCTION:HI",
-  "ello": "FUNCTION:HI",
+  "hello": lambda _: hi(),
+  "howdy": lambda _: hi(),
+  "hi": lambda _: hi(),
+  "what's up": lambda _: hi(),
+  "hey": lambda _: hi(),
+  "ello": lambda _: hi(),
 }
 
 # It's a direct command to @screambot and it contains this text.
@@ -99,19 +99,19 @@ CONTAIN_COMMANDS = {
   "can you even": "I literally can't even.",
   "work": "WERK!",
   "industry": ":poop: :fire:",
-  "patriarchy": "FUNCTION:RANDOM feminism",
-  "feminism": "FUNCTION:RANDOM feminism",
-  "tech": "FUNCTION:RANDOM tech",
-  "inspire": "FUNCTION:RANDOM tech",
-  "inspiration": "FUNCTION:RANDOM tech",
-  "rage": "FUNCTION:RAGE",
-  "destroy": "FUNCTION:RAGE",
+  "patriarchy": lambda _: random_quote("feminism"),
+  "feminism": lambda _: random_quote("feminism"),
+  "tech": lambda _: random_quote("tech"),
+  "inspire": lambda _: random_quote("tech"),
+  "inspiration": lambda _: random_quote("tech"),
+  "rage": lambda _: rage(city=None, rage_level=random.random()),
+  "destroy": lambda _: rage(city=None, rage_level=random.random()),
   "&lt;3": ":heart:",
   "food": ":pizza:",
   "systemd": "systemd is strange and mysterious. Bring back init scripts!",
   "systemctl": "systemctl is strange and mysterious. Bring back init scripts!",
   "tea": "Always here for afternoontea :tea: :female-technologist:",
-  "why": "FUNCTION:WHY",
+  "why": lambda _: why(),
 }
 
 # It's not a command but it contains the word screambot and this text.
@@ -229,22 +229,93 @@ def check_starters(command, starts):
   for text in starts.keys():
     if command.lower().startswith(text.lower()):
       thing = command[len(text):] # Everything but the starter words
-      # The template replaces "$what" with the rest of the line.
-      command = string.Template(starts[text.lower()]).safe_substitute(what=thing)
-      if command.startswith("FUNCTION:UPPERCASE "):
-        stripped = command[len("FUNCTION:UPPERCASE "):]
-        return stripped.upper()
-      if command.startswith("FUNCTION:HELP"):
-        return help_message()
-      if command.startswith("FUNCTION:RANDOM "):
-        stripped = command[len("FUNCTION:RANDOM "):]
-        return random_quote(stripped)
-      if command.startswith("FUNCTION:RAGE "):
-        stripped = command[len("FUNCTION:RAGE "):]
-        return rage(city=stripped)
-      if command.startswith("FUNCTION:HI"):
-        return hi()
-      return command
+      value = starts[text.lower()]
+
+      # Check if it's callable (function/lambda)
+      if callable(value):
+        return value(thing)
+      else:
+        # It's a string template
+        return string.Template(value).safe_substitute(what=thing)
+
+
+def _should_respond(message, bot_id):
+  """Check if screambot should respond to this message."""
+  return bot_id.lower() in message.lower() or "screambot" in message.lower()
+
+
+def _parse_message(message, bot_id):
+  """Parse a message to extract the command and whether it's a direct command.
+
+  Returns:
+    Tuple of (command, is_direct) where command is the extracted text or None,
+    and is_direct indicates if this is a direct command to screambot.
+  """
+  # First handle commands starting with "screambot" or "Screambot:" or similar.
+  if message.lower().startswith("screambot") or message.lower().startswith("@screambot"):
+    try:
+      command = message.split(' ', 1)[1].lstrip()
+      return (command, True)
+    except IndexError:
+      return (None, True)
+
+  # Next try things starting with a username like <@WABC123>.
+  matches = re.search(COMMAND_REGEX, message)
+  if matches:
+    user = matches.group(1)
+    if user != bot_id:
+      return (None, False)
+    command = matches.group(2).lower().lstrip()
+    return (command, True)
+
+  return (None, False)
+
+
+def _handle_direct_command(command, speaker):
+  """Handle a direct command to screambot."""
+  # A complete command like "hug" or "freak out".
+  if command in STANDALONE_COMMANDS:
+    return STANDALONE_COMMANDS[command]
+
+  # Try with stripped punctuation.
+  remove_punctuation = str.maketrans('', '', string.punctuation)
+  stripped = command.translate(remove_punctuation)
+  if stripped in STANDALONE_COMMANDS:
+    return STANDALONE_COMMANDS[stripped]
+
+  # A single emoji.
+  if re.match(":[\w_-]+:", command):
+    return command + command + command + "!"
+
+  # Starter commands.
+  for command_set in [STARTER_COMMANDS_LONG, STARTER_COMMANDS_EE, STARTER_COMMANDS]:
+    response = check_starters(command, command_set)
+    if response:
+      return response
+
+  # Contain commands.
+  for text in CONTAIN_COMMANDS.keys():
+    if text.lower() in command.lower():
+      value = CONTAIN_COMMANDS[text.lower()]
+      if callable(value):
+        return value(command.lower())
+      else:
+        return string.Template(value).safe_substitute(what=command.lower())
+
+  # Unknown command.
+  return "Sorry, %s, I don't know how to %s" % (speaker, command)
+
+
+def _check_conversation(message):
+  """Handle passive mentions of screambot (not direct commands)."""
+  for text in CONVERSATION.keys():
+    if text.lower() in message.lower():
+      value = CONVERSATION[text.lower()]
+      if callable(value):
+        return value(text.lower())
+      else:
+        return string.Template(value).safe_substitute(what=text.lower())
+  return None
 
 
 def create_response(message, bot_id, speaker=None):
@@ -258,90 +329,24 @@ def create_response(message, bot_id, speaker=None):
     (str) A string to respond with or None.
   """
   # Only trigger on sentences containing "screambot" or @screambot's UID.
-  if bot_id.lower() not in message.lower() and "screambot" not in message.lower():
-    return
+  if not _should_respond(message, bot_id):
+    return None
 
-  user = None
-  command = None
-  # First handle commands starting with "screambot" or "Screambot:" or similar.
-  # Usually the text '@screambot' gets translated into an id instead, but
-  # occasionally slack sends us the word instead, so we check for that too.
-  if message.lower().startswith("screambot") or message.lower().startswith("@screambot"):
-    user = "screambot"
-    try:
-        command = message.split(' ', 1)[1].lstrip()  # everything but the first word.
-    except IndexError:
-        command = None
+  # Parse the message to extract command and determine if it's direct.
+  command, is_direct = _parse_message(message, bot_id)
 
-  # Next try things starting with a username, which we get as an internal uid like <@WABC123>.
-  else:
-    matches = re.search(COMMAND_REGEX, message)
-    if matches:
-    # Matches things like "@screambot scream a thing" and "@tanya some message"
-      user = matches.group(1)  # Who was mentioned, e.g., screambot or tanya
-      if user != bot_id: # It was a message for someone else that included the word 'screambot'
-        return "You're talking about me <3"
-      command = matches.group(2).lower().lstrip()  # Everything past the name: "do a thing".
+  # Handle direct commands to screambot.
+  if is_direct:
+    if command:
+      return _handle_direct_command(command, speaker)
+    else:
+      return "Want me to do something, %s? Start your message with @screambot." % speaker
 
-  if user and command:
-    # A complete command like "hug" or "freak out".
-    if command in STANDALONE_COMMANDS:
-      return STANDALONE_COMMANDS[command]
+  # Handle passive mentions (someone mentioned screambot but it wasn't directed at us).
+  response = _check_conversation(message)
+  if response:
+    return response
 
-    # Try the same thing again with stripped punctuation. Some commands can
-    # contain punctuation, like the very important '<3' command, so we try it
-    # first as-is, then have a second attempt so we can catch things like "scream!"
-    remove_punctuation = str.maketrans('', '', string.punctuation)
-    stripped = command.translate(remove_punctuation)
-    if stripped in STANDALONE_COMMANDS:
-      return STANDALONE_COMMANDS[stripped]
-
-    # A single emoji, not counting any caught by the STANDALONE_COMMANDS.
-    if re.match(":[\w_-]+:", command):
-      return command + command + command + "!"
-
-    # A command at the start of the line, like scream or hate. We maintain three
-    # dictionaries:
-    # STARTER_COMMANDS_LONG: multiword commands that we want to match first
-    # STARTER_COMMANDS: one word commands
-    # STARTER_COMMANDS_EE: easter eggs that don't show up in the help message,
-    # just for fun
-    for command_set in [STARTER_COMMANDS_LONG, STARTER_COMMANDS_EE,
-                         STARTER_COMMANDS]:
-      response = check_starters(command, command_set)
-      if response:
-        return response
-
-    # A command that contains a word that wasn't caught by the STARTER_COMMANDS.
-    # The template is to replace "$what" with the entire command.
-    for text in CONTAIN_COMMANDS.keys():
-      if text.lower() in command.lower():
-        template = string.Template(CONTAIN_COMMANDS[text.lower()])
-        command = template.safe_substitute(what=command.lower())
-        if command.startswith("FUNCTION:RANDOM "):
-          stripped = command[len("FUNCTION:RANDOM "):]
-          return random_quote(stripped)
-        if command.startswith("FUNCTION:RAGE"):
-          rage_level = random.random()
-          return rage(city=None, rage_level=rage_level)
-        if command.startswith("FUNCTION:WHY"):
-          stripped = command[len("FUNCTION:WHY"):]
-          return why()
-        return command
-
-    # A direct command we don't know how to handle.
-    return "Sorry, %s, I don't know how to %s" % (speaker, command)
-
-  # Now handle messages that don't start with @screambot/screambot, but use
-  # her name somewhere in the sentence.
-  for text in CONVERSATION.keys():
-    if text.lower() in message.lower():
-      template = string.Template(CONVERSATION[text.lower()])
-      command = template.safe_substitute(what=text.lower())
-      if command.startswith("FUNCTION:RANDOM "):
-        stripped = command[len("FUNCTION:RANDOM "):]
-        return random_quote(stripped)
-      return command
-
-  return "Want me to do something, %s? Start your message with @screambot." % speaker
+  # Someone mentioned us in a message to someone else.
+  return "You're talking about me <3"
 
