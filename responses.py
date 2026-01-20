@@ -5,7 +5,8 @@ import random
 import re
 import string
 
-COMMAND_REGEX = "^<@(|[WU].+?)>[:,]? (.+)"
+COMMAND_REGEX = r"^<@([WU][^>]*)>[:,]? (.+)"
+MAX_INPUT_LENGTH = 2000  # Slack's message limit
 
 # It's a command to @screambot and this is the entire thing.
 STANDALONE_COMMANDS = {
@@ -39,8 +40,8 @@ STANDALONE_COMMANDS = {
 # "$what" will be replaced with the thing to scream about.
 # TODO: Add "$who" and figure out how to talk to.
 
-# Do multiword commands first. This is shite and I should rewrite this whole
-# thing some time.
+# Process multiword commands first to avoid partial matches
+# (e.g., "lose it about" should match before "lose")
 STARTER_COMMANDS_LONG = {
   "announce that ": ":star: :star: EXCUSE ME HI I HAVE AN ANNOUNCEMENT: $what :star: :star:",
   "freak out about ": "I am LOSING MY SHIT about $what right now.",
@@ -60,6 +61,7 @@ STARTER_COMMANDS = {
   "blame ": "Grr, $what strikes again.",
   "celebrate ": ":sparkles: :raised_hands: :raised_hands: hurray for $what!! :tada: :tada: :sparkles:",
   "cheer ": ":sparkles: :raised_hands: :raised_hands: hurray $what!! :tada: :tada: :sparkles:",
+  # "destroy CITY" - destroys the specified city (also in CONTAIN_COMMANDS with different behavior)
   "destroy ": lambda city: rage(city=city),
   "flip": "(╯°□°）╯︵ ┻━┻)",
   "fuck ": "$what needs to fuck off right now :rage:",
@@ -105,6 +107,7 @@ CONTAIN_COMMANDS = {
   "inspire": lambda _: random_quote("tech"),
   "inspiration": lambda _: random_quote("tech"),
   "rage": lambda _: rage(city=None, rage_level=random.random()),
+  # "...destroy..." - random city with random rage level (also in STARTER_COMMANDS with different behavior)
   "destroy": lambda _: rage(city=None, rage_level=random.random()),
   "&lt;3": ":heart:",
   "food": ":pizza:",
@@ -237,6 +240,7 @@ def check_starters(command, starts):
       else:
         # It's a string template
         return string.Template(value).safe_substitute(what=thing)
+  return None  # No match found
 
 
 def _should_respond(message, bot_id):
@@ -273,6 +277,10 @@ def _parse_message(message, bot_id):
 
 def _handle_direct_command(command, speaker):
   """Handle a direct command to screambot."""
+  # Validate input length to prevent memory exhaustion
+  if len(command) > MAX_INPUT_LENGTH:
+    return "That's too much for me to handle!"
+
   # A complete command like "hug" or "freak out".
   if command in STANDALONE_COMMANDS:
     return STANDALONE_COMMANDS[command]
