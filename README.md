@@ -66,12 +66,13 @@ it's just a maze of twisty regexs. Hey, we make our own fun.
    pip3 install -r requirements.txt
    ```
 
-3. Create `secret.py` with your tokens:
+3. Create `secret.py` with your tokens. Should look like
+   ```
    SLACK_BOT_TOKEN = "xoxb-your-bot-token-here"
    SLACK_APP_TOKEN = "xapp-your-app-token-here"
    ```
 
-4. Test locally:
+5. Test locally:
    ```bash
    python3 app.py
    ```
@@ -83,7 +84,7 @@ it's just a maze of twisty regexs. Hey, we make our own fun.
    Screambot = yes!
    ```
 
-5. Test in Slack by sending a message: `@screambot hello`
+6. Test in Slack by sending a message: `@screambot hello`
 
 ### Step 3: Deploy to Production (GCE VM)
 
