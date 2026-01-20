@@ -52,7 +52,7 @@ STARTER_COMMANDS_LONG = {
   "react to ": "EXCUSE ME HI we need to talk about $what. How's everyone feeling about that?",
   "save me from ": ":fire: pew :fire:pew :fire: I have exploded all the $what. :fire: You're welcome. :fire:",
   "sigh about ": "Yeah, $what is not the best, is it? :tea:?",
-  "what can you ": "FUNCTION:HELP",
+  "what can you ": lambda _: help_message(),
 }
 
 STARTER_COMMANDS = {
@@ -60,16 +60,16 @@ STARTER_COMMANDS = {
   "blame ": "Grr, $what strikes again.",
   "celebrate ": ":sparkles: :raised_hands: :raised_hands: hurray for $what!! :tada: :tada: :sparkles:",
   "cheer ": ":sparkles: :raised_hands: :raised_hands: hurray $what!! :tada: :tada: :sparkles:",
-  "destroy ": "FUNCTION:RAGE $what",
+  "destroy ": lambda city: rage(city=city),
   "flip": "(╯°□°）╯︵ ┻━┻)",
   "fuck ": "$what needs to fuck off right now :rage:",
   "hug ": ":virtualhug: for $what",
   "hate ": "I hate $what SO MUCH. Ugh, the worst.",
   "rant": "AUGH seriously though you know what sucks?? $what, that's what sucks.",
   "love ": "$what is pretty much the best thing.",
-  "scream ": "FUNCTION:UPPERCASE $what",
+  "scream ": lambda what: what.upper(),
   "tableflip": "(╯°□°）╯︵ ┻━┻)",
-  "help": "FUNCTION:HELP",
+  "help": lambda _: help_message(),
 }
 
 # Behave exactly as starter commands but aren't in the "what can you do" list.
@@ -80,12 +80,12 @@ STARTER_COMMANDS_EE = {
   "i love you": "It's mutual, I promise you.",
   "&lt;3": "Right back at you <3",
   "good bot": ":heart:",
-  "hello": "FUNCTION:HI",
-  "howdy": "FUNCTION:HI",
-  "hi": "FUNCTION:HI",
-  "what's up": "FUNCTION:HI",
-  "hey": "FUNCTION:HI",
-  "ello": "FUNCTION:HI",
+  "hello": lambda _: hi(),
+  "howdy": lambda _: hi(),
+  "hi": lambda _: hi(),
+  "what's up": lambda _: hi(),
+  "hey": lambda _: hi(),
+  "ello": lambda _: hi(),
 }
 
 # It's a direct command to @screambot and it contains this text.
@@ -99,19 +99,19 @@ CONTAIN_COMMANDS = {
   "can you even": "I literally can't even.",
   "work": "WERK!",
   "industry": ":poop: :fire:",
-  "patriarchy": "FUNCTION:RANDOM feminism",
-  "feminism": "FUNCTION:RANDOM feminism",
-  "tech": "FUNCTION:RANDOM tech",
-  "inspire": "FUNCTION:RANDOM tech",
-  "inspiration": "FUNCTION:RANDOM tech",
-  "rage": "FUNCTION:RAGE",
-  "destroy": "FUNCTION:RAGE",
+  "patriarchy": lambda _: random_quote("feminism"),
+  "feminism": lambda _: random_quote("feminism"),
+  "tech": lambda _: random_quote("tech"),
+  "inspire": lambda _: random_quote("tech"),
+  "inspiration": lambda _: random_quote("tech"),
+  "rage": lambda _: rage(city=None, rage_level=random.random()),
+  "destroy": lambda _: rage(city=None, rage_level=random.random()),
   "&lt;3": ":heart:",
   "food": ":pizza:",
   "systemd": "systemd is strange and mysterious. Bring back init scripts!",
   "systemctl": "systemctl is strange and mysterious. Bring back init scripts!",
   "tea": "Always here for afternoontea :tea: :female-technologist:",
-  "why": "FUNCTION:WHY",
+  "why": lambda _: why(),
 }
 
 # It's not a command but it contains the word screambot and this text.
@@ -229,22 +229,14 @@ def check_starters(command, starts):
   for text in starts.keys():
     if command.lower().startswith(text.lower()):
       thing = command[len(text):] # Everything but the starter words
-      # The template replaces "$what" with the rest of the line.
-      command = string.Template(starts[text.lower()]).safe_substitute(what=thing)
-      if command.startswith("FUNCTION:UPPERCASE "):
-        stripped = command[len("FUNCTION:UPPERCASE "):]
-        return stripped.upper()
-      if command.startswith("FUNCTION:HELP"):
-        return help_message()
-      if command.startswith("FUNCTION:RANDOM "):
-        stripped = command[len("FUNCTION:RANDOM "):]
-        return random_quote(stripped)
-      if command.startswith("FUNCTION:RAGE "):
-        stripped = command[len("FUNCTION:RAGE "):]
-        return rage(city=stripped)
-      if command.startswith("FUNCTION:HI"):
-        return hi()
-      return command
+      value = starts[text.lower()]
+
+      # Check if it's callable (function/lambda)
+      if callable(value):
+        return value(thing)
+      else:
+        # It's a string template
+        return string.Template(value).safe_substitute(what=thing)
 
 
 def create_response(message, bot_id, speaker=None):
@@ -316,18 +308,14 @@ def create_response(message, bot_id, speaker=None):
     # The template is to replace "$what" with the entire command.
     for text in CONTAIN_COMMANDS.keys():
       if text.lower() in command.lower():
-        template = string.Template(CONTAIN_COMMANDS[text.lower()])
-        command = template.safe_substitute(what=command.lower())
-        if command.startswith("FUNCTION:RANDOM "):
-          stripped = command[len("FUNCTION:RANDOM "):]
-          return random_quote(stripped)
-        if command.startswith("FUNCTION:RAGE"):
-          rage_level = random.random()
-          return rage(city=None, rage_level=rage_level)
-        if command.startswith("FUNCTION:WHY"):
-          stripped = command[len("FUNCTION:WHY"):]
-          return why()
-        return command
+        value = CONTAIN_COMMANDS[text.lower()]
+
+        # Check if it's callable (function/lambda)
+        if callable(value):
+          return value(command.lower())
+        else:
+          # It's a string template
+          return string.Template(value).safe_substitute(what=command.lower())
 
     # A direct command we don't know how to handle.
     return "Sorry, %s, I don't know how to %s" % (speaker, command)
@@ -336,12 +324,14 @@ def create_response(message, bot_id, speaker=None):
   # her name somewhere in the sentence.
   for text in CONVERSATION.keys():
     if text.lower() in message.lower():
-      template = string.Template(CONVERSATION[text.lower()])
-      command = template.safe_substitute(what=text.lower())
-      if command.startswith("FUNCTION:RANDOM "):
-        stripped = command[len("FUNCTION:RANDOM "):]
-        return random_quote(stripped)
-      return command
+      value = CONVERSATION[text.lower()]
+
+      # Check if it's callable (function/lambda)
+      if callable(value):
+        return value(text.lower())
+      else:
+        # It's a string template
+        return string.Template(value).safe_substitute(what=text.lower())
 
   return "Want me to do something, %s? Start your message with @screambot." % speaker
 
