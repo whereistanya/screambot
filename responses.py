@@ -5,6 +5,14 @@ import random
 import re
 import string
 
+# Global storage reference (set by app.py)
+_storage = None
+
+def set_storage(storage):
+  """Set the storage manager (called from app.py)."""
+  global _storage
+  _storage = storage
+
 COMMAND_REGEX = r"^<@([WU][^>]*)>[:,]? (.+)"
 MAX_INPUT_LENGTH = 2000  # Slack's message limit
 
@@ -275,11 +283,21 @@ def _parse_message(message, bot_id):
   return (None, False)
 
 
-def _handle_direct_command(command, speaker):
+def _handle_direct_command(command, speaker, user_id=None):
   """Handle a direct command to screambot."""
   # Validate input length to prevent memory exhaustion
   if len(command) > MAX_INPUT_LENGTH:
     return "That's too much for me to handle!"
+
+  # Check for "custom" command - triggers Slack UI
+  if command.lower() == "custom":
+    return "__OPEN_MANAGE_COMMANDS_UI__"
+
+  # Check custom commands FIRST (before built-in commands)
+  if _storage and user_id:
+    custom_response = _storage.get_command(command.lower())
+    if custom_response:
+      return custom_response
 
   # A complete command like "hug" or "freak out".
   if command in STANDALONE_COMMANDS:
@@ -311,7 +329,9 @@ def _handle_direct_command(command, speaker):
         return string.Template(value).safe_substitute(what=command.lower())
 
   # Unknown command.
-  return "Sorry, %s, I don't know how to %s" % (speaker, command)
+  return ("Sorry, %s, I don't know how to %s yet. You can tell me how by typing "
+          "`screambot custom`. Feel free to DM me if you prefer to try it out in a DM "
+          "instead of in a channel." % (speaker, command))
 
 
 def _check_conversation(message):
@@ -326,13 +346,14 @@ def _check_conversation(message):
   return None
 
 
-def create_response(message, bot_id, speaker=None):
+def create_response(message, bot_id, speaker=None, user_id=None):
   """Return a response to the message if it's about screambot.
 
   Args:
     message: (str) The entire line that someone typed. Slack sends these to us.
     bot_id: (str) Screambot's userid. It looks like "@U1234566"
     speaker: (str) The name of the person who invoked screambot.
+    user_id: (str) The Slack user ID of the person (for custom commands).
   Returns:
     (str) A string to respond with or None.
   """
@@ -346,7 +367,7 @@ def create_response(message, bot_id, speaker=None):
   # Handle direct commands to screambot.
   if is_direct:
     if command:
-      return _handle_direct_command(command, speaker)
+      return _handle_direct_command(command, speaker, user_id)
     else:
       return "Want me to do something, %s? Start your message with @screambot." % speaker
 

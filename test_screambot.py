@@ -44,7 +44,7 @@ class TestScreambot(unittest.TestCase):
       "thanks, @screambot": "Any time.",
       "good work, screambot": ":heart_eyes:",
       "&lt;3 screambot": ":heart:",
-      "<@UA1234567> someunknownthing": "Sorry, some_user, I don't know how to someunknownthing",
+      "<@UA1234567> someunknownthing": "Sorry, some_user, I don't know how to someunknownthing yet. You can tell me how by typing `screambot custom`. Feel free to DM me if you prefer to try it out in a DM instead of in a channel.",
     }
 
     for message, expected in cases.items():
@@ -270,6 +270,189 @@ class TestEdgeCases(unittest.TestCase):
     long_city = "A" * 100
     response = responses.create_response(f"screambot destroy {long_city}", bot_id)
     self.assertIn(long_city.upper(), response)
+
+
+class TestCustomCommands(unittest.TestCase):
+  """Test custom command functionality."""
+
+  def setUp(self):
+    """Set up test storage."""
+    import os
+    from storage import StorageManager
+    self.test_db = "test_screambot.db"
+    if os.path.exists(self.test_db):
+      os.remove(self.test_db)
+    storage = StorageManager(self.test_db)
+    responses.set_storage(storage)
+    self.storage = storage
+
+  def tearDown(self):
+    """Clean up."""
+    import os
+    self.storage.close()
+    if os.path.exists(self.test_db):
+      os.remove(self.test_db)
+    responses.set_storage(None)
+
+  def test_custom_command_ui_trigger(self):
+    """Test that 'custom' keyword triggers UI."""
+    bot_id = "UA1234567"
+
+    response = responses.create_response(
+      "screambot custom",
+      bot_id,
+      "testuser",
+      "U123"
+    )
+    self.assertEqual(response, "__OPEN_MANAGE_COMMANDS_UI__")
+
+  def test_custom_command_basic(self):
+    """Test basic custom command creation and triggering."""
+    bot_id = "UA1234567"
+
+    # Create a command
+    self.storage.add_command("panic", "breathe", "U123")
+
+    # Verify it works
+    response = responses.create_response(
+      "screambot panic",
+      bot_id,
+      "testuser",
+      "U123"
+    )
+    self.assertEqual(response, "breathe")
+
+  def test_command_case_insensitive(self):
+    """Triggers should be case-insensitive."""
+    bot_id = "UA1234567"
+    self.storage.add_command("panic", "breathe", "U123")
+
+    response = responses.create_response(
+      "screambot PANIC",
+      bot_id,
+      "testuser",
+      "U123"
+    )
+    self.assertEqual(response, "breathe")
+
+  def test_custom_command_priority(self):
+    """Custom commands should override built-in commands."""
+    bot_id = "UA1234567"
+
+    # Create custom "hug" command (overrides built-in)
+    self.storage.add_command("hug", "custom hug response", "U123")
+
+    response = responses.create_response(
+      "screambot hug",
+      bot_id,
+      "testuser",
+      "U123"
+    )
+    self.assertEqual(response, "custom hug response")
+
+  def test_workspace_wide_commands(self):
+    """Any user can trigger commands created by others."""
+    bot_id = "UA1234567"
+
+    # User U123 creates a command
+    self.storage.add_command("teamhug", "group hug!", "U123")
+
+    # User U456 should be able to trigger it
+    response = responses.create_response(
+      "screambot teamhug",
+      bot_id,
+      "otheruser",
+      "U456"
+    )
+    self.assertEqual(response, "group hug!")
+
+  def test_custom_command_not_triggered_without_user_id(self):
+    """Custom commands should not work if user_id is not provided."""
+    bot_id = "UA1234567"
+    self.storage.add_command("panic", "breathe", "U123")
+
+    # Call without user_id
+    response = responses.create_response(
+      "screambot panic",
+      bot_id,
+      "testuser",
+      None  # No user_id
+    )
+    # Should fall back to "don't know how to" message
+    self.assertIn("don't know how to panic", response)
+
+  def test_nonexistent_custom_command(self):
+    """Non-existent custom commands should fall through to normal handling."""
+    bot_id = "UA1234567"
+
+    response = responses.create_response(
+      "screambot nonexistent",
+      bot_id,
+      "testuser",
+      "U123"
+    )
+    self.assertIn("don't know how to nonexistent", response)
+
+  def test_custom_command_with_special_chars(self):
+    """Test commands with special characters."""
+    bot_id = "UA1234567"
+
+    self.storage.add_command("deadline panic!", "take a breath", "U123")
+
+    response = responses.create_response(
+      "screambot deadline panic!",
+      bot_id,
+      "testuser",
+      "U123"
+    )
+    self.assertEqual(response, "take a breath")
+
+  def test_update_existing_command(self):
+    """Test that updating a command works correctly."""
+    bot_id = "UA1234567"
+
+    # Create initial command
+    self.storage.add_command("panic", "old response", "U123")
+
+    # Update it
+    self.storage.add_command("panic", "new response", "U456")
+
+    # Verify new response
+    response = responses.create_response(
+      "screambot panic",
+      bot_id,
+      "testuser",
+      "U123"
+    )
+    self.assertEqual(response, "new response")
+
+  def test_custom_command_with_emoji(self):
+    """Test commands with emoji in response."""
+    bot_id = "UA1234567"
+
+    self.storage.add_command("celebrate", "🎉 party time! 🎊", "U123")
+
+    response = responses.create_response(
+      "screambot celebrate",
+      bot_id,
+      "testuser",
+      "U123"
+    )
+    self.assertEqual(response, "🎉 party time! 🎊")
+
+  def test_custom_command_with_newlines(self):
+    """Test commands with newlines in response."""
+    bot_id = "UA1234567"
+
+    self.storage.add_command("multiline", "line 1\nline 2\nline 3", "U123")
+
+    response = responses.create_response(
+      "screambot multiline",
+      bot_id,
+      "testuser",
+      "U123"
+    )
+    self.assertEqual(response, "line 1\nline 2\nline 3")
 
 
 if __name__ == 'main__':
