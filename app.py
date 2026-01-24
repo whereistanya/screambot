@@ -323,13 +323,13 @@ def main():
               "action_id": "trigger_input",
               "placeholder": {
                 "type": "plain_text",
-                "text": "e.g., deadline panic"
+                "text": "e.g., panic or love"
               },
               "max_length": 100
             },
             "hint": {
               "type": "plain_text",
-              "text": "What phrase triggers this command? (2-100 characters)"
+              "text": "Any command can be a template. Use $what in your response. 2-100 characters."
             }
           },
           {
@@ -345,13 +345,13 @@ def main():
               "multiline": True,
               "placeholder": {
                 "type": "plain_text",
-                "text": "e.g., Take a breath! You've got this 💪"
+                "text": "e.g., I love $what SO MUCH!"
               },
               "max_length": 500
             },
             "hint": {
               "type": "plain_text",
-              "text": "What should screambot respond with? (max 500 characters)"
+              "text": "Use $what to capture extra text after the trigger. Max 500 characters."
             }
           }
         ]

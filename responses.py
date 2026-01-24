@@ -295,9 +295,23 @@ def _handle_direct_command(command, speaker, user_id=None):
 
   # Check custom commands FIRST (before built-in commands)
   if _storage and user_id:
-    custom_response = _storage.get_command(command.lower())
-    if custom_response:
-      return custom_response
+    # Get all custom commands
+    all_custom_commands = _storage.list_all_commands()
+
+    # First, try exact matches
+    for cmd in all_custom_commands:
+      if command.lower() == cmd['trigger']:
+        return cmd['response']
+
+    # Second, try prefix matches (for templates)
+    for cmd in all_custom_commands:
+      trigger = cmd['trigger']
+      # Check if command starts with trigger and has non-whitespace after it
+      if command.lower().startswith(trigger):
+        remainder = command[len(trigger):].lstrip()
+        if remainder:  # There's non-whitespace text after the trigger
+          # Extract the "what" part and substitute
+          return string.Template(cmd['response']).safe_substitute(what=remainder)
 
   # A complete command like "hug" or "freak out".
   if command in STANDALONE_COMMANDS:

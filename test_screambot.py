@@ -454,6 +454,117 @@ class TestCustomCommands(unittest.TestCase):
     )
     self.assertEqual(response, "line 1\nline 2\nline 3")
 
+  def test_custom_command_with_template_variable(self):
+    """Test custom commands with $what template variable."""
+    bot_id = "UA1234567"
+
+    # Create a command - automatically becomes a template when text follows
+    self.storage.add_command("love", "I love $what SO MUCH!", "U123")
+
+    response = responses.create_response(
+      "screambot love cats",
+      bot_id,
+      "testuser",
+      "U123"
+    )
+    self.assertEqual(response, "I love cats SO MUCH!")
+
+  def test_custom_command_template_with_emoji(self):
+    """Test template variable with emoji response."""
+    bot_id = "UA1234567"
+
+    self.storage.add_command("celebrate", "🎉 yay for $what!! 🎊", "U123")
+
+    response = responses.create_response(
+      "screambot celebrate coffee",
+      bot_id,
+      "testuser",
+      "U123"
+    )
+    self.assertEqual(response, "🎉 yay for coffee!! 🎊")
+
+  def test_custom_command_template_multiple_words(self):
+    """Test template variable with multi-word input."""
+    bot_id = "UA1234567"
+
+    self.storage.add_command("announce", "ATTENTION: $what is here!", "U123")
+
+    response = responses.create_response(
+      "screambot announce the pizza delivery",
+      bot_id,
+      "testuser",
+      "U123"
+    )
+    self.assertEqual(response, "ATTENTION: the pizza delivery is here!")
+
+  def test_custom_command_template_vs_exact(self):
+    """Test that exact matches take priority over template matching."""
+    bot_id = "UA1234567"
+
+    # Create a command that can work both ways
+    self.storage.add_command("test", "exact match", "U123")
+
+    # Exact match should win
+    response1 = responses.create_response(
+      "screambot test",
+      bot_id,
+      "testuser",
+      "U123"
+    )
+    self.assertEqual(response1, "exact match")
+
+    # With additional text, it becomes a template
+    self.storage.add_command("greet", "Hello $what!", "U123")
+    response2 = responses.create_response(
+      "screambot greet world",
+      bot_id,
+      "testuser",
+      "U123"
+    )
+    self.assertEqual(response2, "Hello world!")
+
+  def test_custom_command_exact_match_only(self):
+    """Test that exact-only commands don't respond to prefix matches."""
+    bot_id = "UA1234567"
+
+    # Command without $what in response - only exact match
+    self.storage.add_command("panic", "Take a breath!", "U123")
+
+    # Exact match works
+    response1 = responses.create_response(
+      "screambot panic",
+      bot_id,
+      "testuser",
+      "U123"
+    )
+    self.assertEqual(response1, "Take a breath!")
+
+    # But adding text after will try to use it as template
+    # Since response doesn't have $what, the text is just ignored
+    response2 = responses.create_response(
+      "screambot panic now",
+      bot_id,
+      "testuser",
+      "U123"
+    )
+    self.assertEqual(response2, "Take a breath!")
+
+  def test_custom_command_without_template_variable(self):
+    """Test that commands work without $what in response."""
+    bot_id = "UA1234567"
+
+    # Response doesn't use $what
+    self.storage.add_command("ignore", "I'm not listening", "U123")
+
+    response = responses.create_response(
+      "screambot ignore everything",
+      bot_id,
+      "testuser",
+      "U123"
+    )
+    # $what not in response, so it's just ignored
+    self.assertEqual(response, "I'm not listening")
+
 
 if __name__ == 'main__':
     unittest.main()
