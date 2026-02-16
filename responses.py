@@ -100,6 +100,7 @@ STARTER_COMMANDS_EE = {
 
 # It's a direct command to @screambot and it contains this text.
 CONTAIN_COMMANDS = {
+  "ai": "I'm not an AI. I'm a maze of twisty if statements.",
   "birthday": ":birthday:",
   "botsnack": ":cookie:",
   "chatgpt": "I'm a little intimidated by ChatGPT to be honest. But glad of more bot friends.",
