@@ -86,6 +86,26 @@ it's just a maze of twisty regexs. Hey, we make our own fun.
 
 6. Test in Slack by sending a message: `@screambot hello`
 
+### Running Tests
+
+To run the test suite:
+
+```bash
+# Run all tests
+./bin/pytest -v
+
+# Or if using system pytest
+python3 -m pytest -v
+```
+
+The test suite includes:
+- Unit tests for screambot responses and commands
+- Storage/database tests
+- Custom command functionality tests
+- Edge case and validation tests
+
+All tests should pass before committing changes.
+
 ### Step 3: Deploy to Production (GCE VM)
 
 #### On your GCE VM:
