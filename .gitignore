@@ -6,6 +6,15 @@ secret.py
 *.db-shm
 *.db-wal
 
+# Virtual environment
+bin/
+pyvenv.cfg
+
+# Editor temporary files
+*.swp
+*.swo
+*~
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
