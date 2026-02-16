@@ -124,19 +124,10 @@ CONTAIN_COMMANDS = {
   "systemctl": "systemctl is strange and mysterious. Bring back init scripts!",
   "tea": "Always here for afternoontea :tea: :female-technologist:",
   "why": lambda _: why(),
-}
-
-# It's not a command but it contains the word screambot and this text.
-CONVERSATION = {
-  "birthday": ":birthday:",
-  "botsnack": ":cookie:",
-  "code": "My code's at https://github.com/whereistanya/screambot. Send Tanya a PR.",
-  "github": "My code's at https://github.com/whereistanya/screambot. Send Tanya a PR.",
+  # Merged from CONVERSATION - now all handled as direct commands
   "thank": "Any time.",
-  ":heart:": ":heart_eyes:",
   "love": ":heart_eyes:",
   "good": ":heart_eyes:",
-  "&lt;3": ":heart:",
   "sedgwick": "Don't get me started! Sedgwick's servers should all melt permanently. Preferably without backups.",
 }
 
@@ -273,29 +264,18 @@ def _parse_message(message, bot_id):
     command = matches.group(2).lower().lstrip()
     return (command, True)
 
-  # Handle commands containing "screambot" or "@screambot" anywhere in the message.
-  # Extract everything after the word "screambot" as the command.
+  # Handle messages containing "screambot" or "@screambot" anywhere.
+  # Extract all text EXCEPT "screambot" as the command, so both
+  # "screambot help" and "help screambot" trigger the help command.
   message_lower = message.lower()
   for trigger in ["@screambot", "screambot"]:
     if trigger in message_lower:
-      # Find the position of "screambot" in the message
-      pos = message_lower.find(trigger)
-      # Extract everything after "screambot"
-      after_trigger = message[pos + len(trigger):].lstrip()
-
-      # Remove leading punctuation like "," or ":" or "?"
-      after_trigger = after_trigger.lstrip(':,?!.').lstrip()
-
-      # If "screambot" is at the start, always treat as direct (even with no command)
-      if pos == 0:
-        return (after_trigger if after_trigger else None, True)
-
-      # If "screambot" is in the middle, only treat as direct if there's a command after it
-      if after_trigger:
-        return (after_trigger, True)
-      else:
-        # No command after "screambot" in the middle - conversation mention
-        return (None, False)
+      # Remove the trigger word and get everything else as the command
+      command = message_lower.replace(trigger, "").replace("@", "")
+      # Strip whitespace and common leading/trailing punctuation (but preserve ! in commands)
+      command = command.strip().strip(':,?').strip()
+      # Always treat as direct command if "screambot" is mentioned
+      return (command if command else None, True)
 
   return (None, False)
 
@@ -365,16 +345,6 @@ def _handle_direct_command(command, speaker, user_id=None):
           "instead of in a channel." % (speaker, command))
 
 
-def _check_conversation(message):
-  """Handle passive mentions of screambot (not direct commands)."""
-  for text in CONVERSATION.keys():
-    if text.lower() in message.lower():
-      value = CONVERSATION[text.lower()]
-      if callable(value):
-        return value(text.lower())
-      else:
-        return string.Template(value).safe_substitute(what=text.lower())
-  return None
 
 
 def create_response(message, bot_id, speaker=None, user_id=None):
@@ -392,21 +362,12 @@ def create_response(message, bot_id, speaker=None, user_id=None):
   if not _should_respond(message, bot_id):
     return None
 
-  # Parse the message to extract command and determine if it's direct.
+  # Parse the message to extract command (always treated as direct).
   command, is_direct = _parse_message(message, bot_id)
 
-  # Handle direct commands to screambot.
-  if is_direct:
-    if command:
-      return _handle_direct_command(command, speaker, user_id)
-    else:
-      return "Want me to do something, %s? Start your message with @screambot." % speaker
-
-  # Handle passive mentions (someone mentioned screambot but it wasn't directed at us).
-  response = _check_conversation(message)
-  if response:
-    return response
-
-  # Someone mentioned us in a message to someone else.
-  return "You're talking about me <3"
+  # All mentions of screambot are now treated as direct commands.
+  if command:
+    return _handle_direct_command(command, speaker, user_id)
+  else:
+    return "Want me to do something, %s? Try 'screambot help'." % speaker
 
