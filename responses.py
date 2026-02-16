@@ -264,15 +264,7 @@ def _parse_message(message, bot_id):
     Tuple of (command, is_direct) where command is the extracted text or None,
     and is_direct indicates if this is a direct command to screambot.
   """
-  # First handle commands starting with "screambot" or "Screambot:" or similar.
-  if message.lower().startswith("screambot") or message.lower().startswith("@screambot"):
-    try:
-      command = message.split(' ', 1)[1].lstrip()
-      return (command, True)
-    except IndexError:
-      return (None, True)
-
-  # Next try things starting with a username like <@WABC123>.
+  # First handle commands starting with a username like <@WABC123>.
   matches = re.search(COMMAND_REGEX, message)
   if matches:
     user = matches.group(1)
@@ -280,6 +272,30 @@ def _parse_message(message, bot_id):
       return (None, False)
     command = matches.group(2).lower().lstrip()
     return (command, True)
+
+  # Handle commands containing "screambot" or "@screambot" anywhere in the message.
+  # Extract everything after the word "screambot" as the command.
+  message_lower = message.lower()
+  for trigger in ["@screambot", "screambot"]:
+    if trigger in message_lower:
+      # Find the position of "screambot" in the message
+      pos = message_lower.find(trigger)
+      # Extract everything after "screambot"
+      after_trigger = message[pos + len(trigger):].lstrip()
+
+      # Remove leading punctuation like "," or ":" or "?"
+      after_trigger = after_trigger.lstrip(':,?!.').lstrip()
+
+      # If "screambot" is at the start, always treat as direct (even with no command)
+      if pos == 0:
+        return (after_trigger if after_trigger else None, True)
+
+      # If "screambot" is in the middle, only treat as direct if there's a command after it
+      if after_trigger:
+        return (after_trigger, True)
+      else:
+        # No command after "screambot" in the middle - conversation mention
+        return (None, False)
 
   return (None, False)
 
