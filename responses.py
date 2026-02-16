@@ -99,6 +99,9 @@ STARTER_COMMANDS_EE = {
 }
 
 # It's a direct command to @screambot and it contains this text.
+# Note: Entries here are substring matches, checked after STANDALONE_COMMANDS.
+# Some entries appear in both dicts: STANDALONE for exact matches (e.g., "botsnack")
+# and CONTAIN for substring matches (e.g., "want a botsnack" contains "botsnack").
 CONTAIN_COMMANDS = {
   "ai": "I'm not an AI. I'm a maze of twisty if statements.",
   "birthday": ":birthday:",
@@ -124,7 +127,6 @@ CONTAIN_COMMANDS = {
   "systemctl": "systemctl is strange and mysterious. Bring back init scripts!",
   "tea": "Always here for afternoontea :tea: :female-technologist:",
   "why": lambda _: why(),
-  # Merged from CONVERSATION - now all handled as direct commands
   "thank": "Any time.",
   "love": ":heart_eyes:",
   "good": ":heart_eyes:",
@@ -251,8 +253,11 @@ def _should_respond(message, bot_id):
 def _parse_message(message, bot_id):
   """Parse a message to extract the command.
 
+  Recognizes both "screambot" and "@screambot" anywhere in the message.
+  Position-independent: "help screambot" and "screambot help" both work.
+
   Returns:
-    The extracted command text, or None if screambot shouldn't respond.
+    The extracted command text (with "screambot" removed), or None.
   """
   # Handle commands starting with a username like <@WABC123>.
   matches = re.search(COMMAND_REGEX, message)

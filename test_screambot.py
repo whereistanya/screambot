@@ -551,5 +551,5 @@ class TestCustomCommands(unittest.TestCase):
     self.assertEqual(response, "I'm not listening")
 
 
-if __name__ == 'main__':
+if __name__ == '__main__':
     unittest.main()

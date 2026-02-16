@@ -10,7 +10,7 @@
 
 ### Code Quality
 - **Always run tests before committing**: `./bin/pytest -v`
-- All 71 tests must pass before creating a PR
+- All tests must pass before creating a PR
 - **Review your own code** before committing:
   - Read through all changes
   - Check for potential issues
