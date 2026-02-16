@@ -112,35 +112,28 @@ class TestHelperFunctions(unittest.TestCase):
     self.assertFalse(responses._should_respond("", "U123"))
 
   def test_parse_message_with_screambot_prefix(self):
-    command, is_direct = responses._parse_message("screambot yo", "U123")
+    command = responses._parse_message("screambot yo", "U123")
     self.assertEqual(command, "yo")
-    self.assertTrue(is_direct)
 
   def test_parse_message_with_at_screambot_prefix(self):
-    command, is_direct = responses._parse_message("@screambot yo", "U123")
+    command = responses._parse_message("@screambot yo", "U123")
     self.assertEqual(command, "yo")
-    self.assertTrue(is_direct)
 
   def test_parse_message_with_bot_id(self):
-    command, is_direct = responses._parse_message("<@U123> scream hello", "U123")
+    command = responses._parse_message("<@U123> scream hello", "U123")
     self.assertEqual(command, "scream hello")
-    self.assertTrue(is_direct)
 
   def test_parse_message_empty_command(self):
-    command, is_direct = responses._parse_message("screambot", "U123")
+    command = responses._parse_message("screambot", "U123")
     self.assertIsNone(command)
-    self.assertTrue(is_direct)
 
   def test_parse_message_different_user(self):
-    command, is_direct = responses._parse_message("<@U456> hello", "U123")
+    command = responses._parse_message("<@U456> hello", "U123")
     self.assertIsNone(command)
-    self.assertFalse(is_direct)
 
-  def test_parse_message_not_direct(self):
-    # With new behavior, "screambot" anywhere makes it a direct command
-    command, is_direct = responses._parse_message("I love screambot", "U123")
+  def test_parse_message_screambot_anywhere(self):
+    command = responses._parse_message("I love screambot", "U123")
     self.assertEqual(command, "i love")
-    self.assertTrue(is_direct)
 
   def test_check_starters_with_template(self):
     starts = {"hate ": "I hate $what SO MUCH."}

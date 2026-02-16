@@ -249,24 +249,23 @@ def _should_respond(message, bot_id):
 
 
 def _parse_message(message, bot_id):
-  """Parse a message to extract the command and whether it's a direct command.
+  """Parse a message to extract the command.
 
   Returns:
-    Tuple of (command, is_direct) where command is the extracted text or None,
-    and is_direct indicates if this is a direct command to screambot.
+    The extracted command text, or None if screambot shouldn't respond.
   """
-  # First handle commands starting with a username like <@WABC123>.
+  # Handle commands starting with a username like <@WABC123>.
   matches = re.search(COMMAND_REGEX, message)
   if matches:
     user = matches.group(1)
     if user != bot_id:
-      return (None, False)
+      return None
     command = matches.group(2).lower().lstrip()
-    return (command, True)
+    return command
 
   # Handle messages containing "screambot" or "@screambot" anywhere.
-  # Extract all text EXCEPT "screambot" as the command, so both
-  # "screambot help" and "help screambot" trigger the help command.
+  # Extract all text EXCEPT "screambot" as the command.
+  # Both "screambot help" and "help screambot" trigger the help command.
   message_lower = message.lower()
   for trigger in ["@screambot", "screambot"]:
     if trigger in message_lower:
@@ -274,10 +273,9 @@ def _parse_message(message, bot_id):
       command = message_lower.replace(trigger, "").replace("@", "")
       # Strip whitespace and common leading/trailing punctuation (but preserve ! in commands)
       command = command.strip().strip(':,?').strip()
-      # Always treat as direct command if "screambot" is mentioned
-      return (command if command else None, True)
+      return command if command else None
 
-  return (None, False)
+  return None
 
 
 def _handle_direct_command(command, speaker, user_id=None):
@@ -362,10 +360,9 @@ def create_response(message, bot_id, speaker=None, user_id=None):
   if not _should_respond(message, bot_id):
     return None
 
-  # Parse the message to extract command (always treated as direct).
-  command, is_direct = _parse_message(message, bot_id)
+  # Parse the message to extract the command.
+  command = _parse_message(message, bot_id)
 
-  # All mentions of screambot are now treated as direct commands.
   if command:
     return _handle_direct_command(command, speaker, user_id)
   else:
