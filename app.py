@@ -128,8 +128,9 @@ def show_command_management_ui(channel_id, user_id, app):
         # Parse SQLite timestamp and format
         dt = datetime.fromisoformat(created_at.replace(' ', 'T'))
         created_at = dt.strftime('%b %d, %Y')
-      except:
-        pass
+      except (ValueError, TypeError) as e:
+        logging.warning("Failed to parse timestamp '%s' for command '%s': %s",
+                       created_at, cmd.get('trigger', 'unknown'), e)
 
     # Escape user-provided content to prevent Slack markup injection
     safe_trigger = escape_slack_markup(cmd['trigger'])
@@ -378,6 +379,7 @@ def main():
         text=f"✅ Deleted command \"{trigger}\""
       )
     else:
+      logging.warning("Failed to delete command '%s' for user %s", trigger, user_id)
       client.chat_postEphemeral(
         channel=body["channel"]["id"],
         user=user_id,
@@ -425,6 +427,8 @@ def main():
         logging.warning(f"Failed to send DM to {user_id}: {e}")
         logging.info(f"Created command '{trigger}' by {user_id}")
     else:
+      logging.warning("Failed to create command '%s' for user %s (may already exist)",
+                     trigger, user_id)
       ack(response_action="errors", errors={
         "trigger_block": "Failed to create command. It may already exist."
       })
