@@ -30,7 +30,6 @@ class TestScreambot(unittest.TestCase):
       "<@UA1234567> scream <system> is broken": "<SYSTEM> IS BROKEN",
       "<@UA1234567> I love you, screambot": "It's mutual, I promise you.",
       "<@UA1234567> i love you, screambot": "It's mutual, I promise you.",
-      "<@UAXXXXXXX> what is screambot?": "You're talking about me <3",
       "<@UA1234567> blame systemd": "Grr, systemd strikes again.",
       "<@UA1234567> destroy Mountain View": ":t-rex: RARRRRR DESTROY MOUNTAIN VIEW :t-rex:",
       "screambot blame the rain": "Grr, the rain strikes again.",
@@ -41,8 +40,8 @@ class TestScreambot(unittest.TestCase):
       "Screambot     yo": "Yo.",
       "Screambot hate on mosquitoes": "You know what I really hate? What I really hate is mosquitoes.",
       "does screambot want a botsnack?": ":cookie:",
-      "thanks, @screambot": "Any time.",
-      "good work, screambot": ":heart_eyes:",
+      "thanks, @screambot": "Any time, friend.",
+      "good work, screambot": "WERK!",
       "&lt;3 screambot": ":heart:",
       "<@UA1234567> someunknownthing": "Sorry, some_user, I don't know how to someunknownthing yet. You can tell me how by typing `screambot custom`. Feel free to DM me if you prefer to try it out in a DM instead of in a channel.",
     }
@@ -113,34 +112,28 @@ class TestHelperFunctions(unittest.TestCase):
     self.assertFalse(responses._should_respond("", "U123"))
 
   def test_parse_message_with_screambot_prefix(self):
-    command, is_direct = responses._parse_message("screambot yo", "U123")
+    command = responses._parse_message("screambot yo", "U123")
     self.assertEqual(command, "yo")
-    self.assertTrue(is_direct)
 
   def test_parse_message_with_at_screambot_prefix(self):
-    command, is_direct = responses._parse_message("@screambot yo", "U123")
+    command = responses._parse_message("@screambot yo", "U123")
     self.assertEqual(command, "yo")
-    self.assertTrue(is_direct)
 
   def test_parse_message_with_bot_id(self):
-    command, is_direct = responses._parse_message("<@U123> scream hello", "U123")
+    command = responses._parse_message("<@U123> scream hello", "U123")
     self.assertEqual(command, "scream hello")
-    self.assertTrue(is_direct)
 
   def test_parse_message_empty_command(self):
-    command, is_direct = responses._parse_message("screambot", "U123")
+    command = responses._parse_message("screambot", "U123")
     self.assertIsNone(command)
-    self.assertTrue(is_direct)
 
   def test_parse_message_different_user(self):
-    command, is_direct = responses._parse_message("<@U456> hello", "U123")
+    command = responses._parse_message("<@U456> hello", "U123")
     self.assertIsNone(command)
-    self.assertFalse(is_direct)
 
-  def test_parse_message_not_direct(self):
-    command, is_direct = responses._parse_message("I love screambot", "U123")
-    self.assertIsNone(command)
-    self.assertFalse(is_direct)
+  def test_parse_message_screambot_anywhere(self):
+    command = responses._parse_message("I love screambot", "U123")
+    self.assertEqual(command, "i love")
 
   def test_check_starters_with_template(self):
     starts = {"hate ": "I hate $what SO MUCH."}
@@ -155,14 +148,6 @@ class TestHelperFunctions(unittest.TestCase):
   def test_check_starters_no_match(self):
     starts = {"hate ": "I hate $what"}
     result = responses.check_starters("love mondays", starts)
-    self.assertIsNone(result)
-
-  def test_check_conversation(self):
-    result = responses._check_conversation("does screambot want a botsnack?")
-    self.assertEqual(result, ":cookie:")
-
-  def test_check_conversation_no_match(self):
-    result = responses._check_conversation("hello world")
     self.assertIsNone(result)
 
 
@@ -566,5 +551,5 @@ class TestCustomCommands(unittest.TestCase):
     self.assertEqual(response, "I'm not listening")
 
 
-if __name__ == 'main__':
+if __name__ == '__main__':
     unittest.main()

@@ -99,6 +99,9 @@ STARTER_COMMANDS_EE = {
 }
 
 # It's a direct command to @screambot and it contains this text.
+# Note: Entries here are substring matches, checked after STANDALONE_COMMANDS.
+# Some entries appear in both dicts: STANDALONE for exact matches (e.g., "botsnack")
+# and CONTAIN for substring matches (e.g., "want a botsnack" contains "botsnack").
 CONTAIN_COMMANDS = {
   "ai": "I'm not an AI. I'm a maze of twisty if statements.",
   "birthday": ":birthday:",
@@ -124,19 +127,9 @@ CONTAIN_COMMANDS = {
   "systemctl": "systemctl is strange and mysterious. Bring back init scripts!",
   "tea": "Always here for afternoontea :tea: :female-technologist:",
   "why": lambda _: why(),
-}
-
-# It's not a command but it contains the word screambot and this text.
-CONVERSATION = {
-  "birthday": ":birthday:",
-  "botsnack": ":cookie:",
-  "code": "My code's at https://github.com/whereistanya/screambot. Send Tanya a PR.",
-  "github": "My code's at https://github.com/whereistanya/screambot. Send Tanya a PR.",
   "thank": "Any time.",
-  ":heart:": ":heart_eyes:",
   "love": ":heart_eyes:",
   "good": ":heart_eyes:",
-  "&lt;3": ":heart:",
   "sedgwick": "Don't get me started! Sedgwick's servers should all melt permanently. Preferably without backups.",
 }
 
@@ -258,30 +251,36 @@ def _should_respond(message, bot_id):
 
 
 def _parse_message(message, bot_id):
-  """Parse a message to extract the command and whether it's a direct command.
+  """Parse a message to extract the command.
+
+  Recognizes both "screambot" and "@screambot" anywhere in the message.
+  Position-independent: "help screambot" and "screambot help" both work.
 
   Returns:
-    Tuple of (command, is_direct) where command is the extracted text or None,
-    and is_direct indicates if this is a direct command to screambot.
+    The extracted command text (with "screambot" removed), or None.
   """
-  # First handle commands starting with "screambot" or "Screambot:" or similar.
-  if message.lower().startswith("screambot") or message.lower().startswith("@screambot"):
-    try:
-      command = message.split(' ', 1)[1].lstrip()
-      return (command, True)
-    except IndexError:
-      return (None, True)
-
-  # Next try things starting with a username like <@WABC123>.
+  # Handle commands starting with a username like <@WABC123>.
   matches = re.search(COMMAND_REGEX, message)
   if matches:
     user = matches.group(1)
     if user != bot_id:
-      return (None, False)
+      return None
     command = matches.group(2).lower().lstrip()
-    return (command, True)
+    return command
 
-  return (None, False)
+  # Handle messages containing "screambot" or "@screambot" anywhere.
+  # Extract all text EXCEPT "screambot" as the command.
+  # Both "screambot help" and "help screambot" trigger the help command.
+  message_lower = message.lower()
+  for trigger in ["@screambot", "screambot"]:
+    if trigger in message_lower:
+      # Remove the trigger word and get everything else as the command
+      command = message_lower.replace(trigger, "").replace("@", "")
+      # Strip whitespace and common leading/trailing punctuation (but preserve ! in commands)
+      command = command.strip().strip(':,?').strip()
+      return command if command else None
+
+  return None
 
 
 def _handle_direct_command(command, speaker, user_id=None):
@@ -349,16 +348,6 @@ def _handle_direct_command(command, speaker, user_id=None):
           "instead of in a channel." % (speaker, command))
 
 
-def _check_conversation(message):
-  """Handle passive mentions of screambot (not direct commands)."""
-  for text in CONVERSATION.keys():
-    if text.lower() in message.lower():
-      value = CONVERSATION[text.lower()]
-      if callable(value):
-        return value(text.lower())
-      else:
-        return string.Template(value).safe_substitute(what=text.lower())
-  return None
 
 
 def create_response(message, bot_id, speaker=None, user_id=None):
@@ -376,21 +365,11 @@ def create_response(message, bot_id, speaker=None, user_id=None):
   if not _should_respond(message, bot_id):
     return None
 
-  # Parse the message to extract command and determine if it's direct.
-  command, is_direct = _parse_message(message, bot_id)
+  # Parse the message to extract the command.
+  command = _parse_message(message, bot_id)
 
-  # Handle direct commands to screambot.
-  if is_direct:
-    if command:
-      return _handle_direct_command(command, speaker, user_id)
-    else:
-      return "Want me to do something, %s? Start your message with @screambot." % speaker
-
-  # Handle passive mentions (someone mentioned screambot but it wasn't directed at us).
-  response = _check_conversation(message)
-  if response:
-    return response
-
-  # Someone mentioned us in a message to someone else.
-  return "You're talking about me <3"
+  if command:
+    return _handle_direct_command(command, speaker, user_id)
+  else:
+    return "Want me to do something, %s? Try 'screambot help'." % speaker
 
